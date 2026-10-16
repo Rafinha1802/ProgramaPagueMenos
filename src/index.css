@@ -1,0 +1,792 @@
+/* ==========================================================================
+   ESTILOS OFICIAIS DO APP FARMÁCIA FARMAVIVA
+   ========================================================================== */
+
+:root {
+  /* Cores do App Oficial */
+  --pm-app-blue: #001FD8;
+  --pm-app-blue-dark: #0017A3;
+  --pm-app-red: #E30613;
+  --pm-app-gray-bg: #F4F6F9;
+  --pm-app-surface: #FFFFFF;
+  --pm-app-text: #1E2022;
+  --pm-app-text-muted: #717A8A;
+  --pm-app-border: #E8ECEF;
+  --pm-app-pink-tag: #FDE8EA;
+  --pm-app-pink-text: #D61B28;
+  --pm-app-green-tag: #008744;
+
+  /* Cores e Tokens do Site Desktop */
+  --pm-blue: #001FD8;
+  --pm-blue-dark: #0017A3;
+  --pm-blue-light: #EFF6FF;
+  --pm-red: #E30613;
+  --pm-red-light: #FEE2E2;
+  --pm-green: #008744;
+  --pm-green-light: #DCFCE7;
+  --pm-gray-bg: #F8FAFC;
+  --text-main: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --border-light: #E2E8F0;
+  --border-subtle: #F1F5F9;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+  --bg-primary: #FFFFFF;
+
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-floating: 0 8px 24px rgba(0, 31, 216, 0.18);
+  --shadow-dock: 0 -4px 16px rgba(0, 0, 0, 0.07);
+
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: #E2E8F0;
+  color: var(--pm-app-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: var(--font-main);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+input {
+  font-family: var(--font-main);
+  outline: none;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  width: 100%;
+}
+
+/* Utilitários de Scroll Horizontal Suave */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ==========================================================================
+   CHASSIS IPHONE 393 x 852 PX COM DYNAMIC ISLAND (EXATO COMO A IMAGEM)
+   ========================================================================== */
+
+.app-wrapper {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 20%, #F1F5F9 0%, #E2E8F0 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+/* Chassi Externo Metálico / Titânio com Botões Laterais */
+.iphone-chassis {
+  position: relative;
+  padding: 10px;
+  background: linear-gradient(145deg, #E5E7EB 0%, #D1D5DB 50%, #9CA3AF 100%);
+  border-radius: 56px;
+  box-shadow:
+    0 25px 60px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.7) inset,
+    0 0 0 2px #6B7280;
+  display: inline-block;
+}
+
+/* Botões Físicos Laterais do iPhone */
+/* Botão de Ação e Volume (Esquerda) */
+.iphone-chassis::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 110px;
+  width: 3px;
+  height: 26px;
+  background: #9CA3AF;
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 45px 0 #9CA3AF, 0 105px 0 #9CA3AF;
+  /* Botão de ação, Vol+, Vol- */
+}
+
+/* Botão Power / Lateral (Direita) */
+.iphone-chassis::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 160px;
+  width: 3px;
+  height: 52px;
+  background: #9CA3AF;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Tela Exata de 393 x 852 px */
+.iphone-screen {
+  width: 393px;
+  height: 852px;
+  background-color: #FFFFFF;
+  border-radius: 47px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 3.5px #000000;
+  /* Borda preta interna uniforme */
+}
+
+/* Dynamic Island (Pílula Superior Centrada) */
+.dynamic-island {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 118px;
+  height: 30px;
+  background-color: #000000;
+  border-radius: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 11px;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.dynamic-island-camera {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #1F2937 0%, #030712 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Barra de Status do iPhone com espaço da Dynamic Island */
+.phone-status-bar {
+  background-color: var(--pm-app-blue);
+  color: #FFFFFF;
+  height: 48px;
+  padding: 0 1.5rem;
+  display: flex;
+  justifyContent: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+/* Home Indicator (Barrinha inferior do iOS) */
+.ios-home-indicator-bar {
+  width: 134px;
+  height: 4.5px;
+  background-color: #0F172A;
+  border-radius: 100px;
+  margin: 6px auto 4px auto;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+/* Header Azul Oficial do App FarmaViva */
+.app-header-blue {
+  background-color: var(--pm-app-blue);
+  padding: 0.75rem 1.15rem 2.25rem 1.15rem;
+  color: #FFFFFF;
+  position: relative;
+}
+
+.app-header-top {
+  display: flex;
+  justifyContent: space-between;
+  align-items: center;
+  margin-bottom: 1.1rem;
+}
+
+.app-brand-greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.app-logo-box {
+  width: 36px;
+  height: 36px;
+  background-color: var(--pm-app-red);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.app-greeting-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: -0.2px;
+}
+
+.app-greeting-text strong {
+  font-weight: 800;
+}
+
+.app-basket-btn {
+  width: 38px;
+  height: 38px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.app-basket-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background-color: var(--pm-app-red);
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 800;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--pm-app-blue);
+}
+
+/* Barra de Busca Flutuante Tradicional */
+.app-search-floating-wrapper {
+  margin-top: -1.4rem;
+  padding: 0 1.15rem;
+  position: relative;
+  z-index: 10;
+}
+
+.app-search-bar {
+  background-color: #FFFFFF;
+  border-radius: 26px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0.55rem 0.95rem;
+  gap: 0.6rem;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.app-search-input {
+  flex: 1;
+  border: none;
+  font-size: 0.92rem;
+  color: var(--pm-app-text);
+  background: transparent;
+}
+
+.app-search-input::placeholder {
+  color: #8E98A8;
+}
+
+.app-search-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #0022D6;
+}
+
+/* Linha de Endereço e Localização */
+.app-address-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.85rem 1.15rem 0.4rem 1.15rem;
+  font-size: 0.82rem;
+  color: var(--pm-app-blue);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.app-address-row span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Barra de IA Commerce Guiada */
+.ai-smart-search-bar {
+  margin: 0.4rem 1.15rem 0.85rem 1.15rem;
+  background: linear-gradient(135deg, #001FD8 0%, #0045B5 100%);
+  border-radius: 18px;
+  padding: 0.9rem 1rem;
+  color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(0, 31, 216, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-smart-search-bar::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Cards Rápidos de Ação (Receita & Alertas) */
+.app-action-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  padding: 0 1.15rem;
+  margin-bottom: 1rem;
+}
+
+.app-action-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--pm-app-border);
+  border-radius: 16px;
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justifyContent: space-between;
+  min-height: 88px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.app-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.app-action-card-top {
+  display: flex;
+  justifyContent: space-between;
+  align-items: center;
+}
+
+.badge-novo {
+  background-color: #008744;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.12rem 0.45rem;
+  border-radius: 6px;
+}
+
+.app-action-card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--pm-app-text);
+  line-height: 1.25;
+  margin-top: 0.35rem;
+}
+
+/* Banners Promocionais */
+.app-banners-carousel {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0 1.15rem 0.75rem 1.15rem;
+  scrollbar-width: none;
+}
+
+.app-banners-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.app-promo-banner {
+  flex: 0 0 280px;
+  height: 125px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.app-promo-banner:hover {
+  transform: scale(1.02);
+}
+
+/* Categorias do App */
+.app-categories-section {
+  padding: 0.5rem 1.15rem 1rem 1.15rem;
+}
+
+.app-categories-header {
+  display: flex;
+  justifyContent: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.app-categories-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--pm-app-text);
+}
+
+.app-categories-see-all {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pm-app-blue);
+  cursor: pointer;
+}
+
+.app-categories-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.app-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  padding: 0.3rem;
+}
+
+.app-category-icon-box {
+  width: 58px;
+  height: 58px;
+  background-color: #FFFFFF;
+  border: 1.5px solid #EBF1FD;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pm-app-blue);
+  box-shadow: 0 2px 6px rgba(0, 31, 216, 0.05);
+  margin-bottom: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.app-category-card.active .app-category-icon-box {
+  background-color: var(--pm-app-blue);
+  color: #FFFFFF;
+  border-color: var(--pm-app-blue);
+}
+
+.app-category-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--pm-app-text);
+  line-height: 1.2;
+}
+
+/* Grid de Produtos (2 Colunas, igual ao print) */
+.app-products-section {
+  padding: 0.5rem 1.15rem 6.5rem 1.15rem;
+}
+
+.app-products-section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--pm-app-text);
+  margin-bottom: 0.9rem;
+}
+
+.app-products-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.app-product-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--pm-app-border);
+  border-radius: 16px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justifyContent: space-between;
+  position: relative;
+  box-shadow: var(--shadow-card);
+  min-height: 310px;
+}
+
+.app-product-top-row {
+  display: flex;
+  justifyContent: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.35rem;
+}
+
+.app-product-tag-pink {
+  background-color: var(--pm-app-pink-tag);
+  color: var(--pm-app-pink-text);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+
+.app-product-fav-btn {
+  color: #94A3B8;
+  padding: 0.1rem;
+}
+
+.app-product-image-container {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.app-product-image-container img {
+  max-height: 110px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.app-product-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.3;
+  margin-bottom: 0.35rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2rem;
+}
+
+.app-product-brand {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--pm-app-blue);
+  text-transform: uppercase;
+  font-style: italic;
+  margin-bottom: 0.4rem;
+}
+
+.app-product-price-block {
+  margin-top: auto;
+  position: relative;
+}
+
+.app-product-original-price {
+  font-size: 0.7rem;
+  color: var(--pm-app-text-muted);
+}
+
+.app-product-discount-label {
+  color: var(--pm-app-pink-text);
+  font-weight: 800;
+  margin-left: 0.3rem;
+}
+
+.app-product-final-price {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--pm-app-blue);
+  line-height: 1.2;
+}
+
+.app-product-add-cart-float {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--pm-app-blue);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 31, 216, 0.35);
+  transition: transform 0.15s ease;
+}
+
+.app-product-add-cart-float:hover {
+  transform: scale(1.08);
+}
+
+/* Barra de Navegação Inferior (Dock do App) */
+.app-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--pm-app-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.45rem 0.5rem 0.65rem 0.5rem;
+  box-shadow: var(--shadow-dock);
+  z-index: 50;
+}
+
+.app-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #717A8A;
+  cursor: pointer;
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+}
+
+.app-nav-item.active {
+  color: var(--pm-app-blue);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   ESTILOS COMPARTILHADOS & SITE DESKTOP
+   ========================================================================== */
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* Seletor de Modo: App Mobile vs Site Desktop */
+.platform-switcher-bar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 4px;
+  border-radius: 999px;
+  display: flex;
+  gap: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.platform-switch-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #94A3B8;
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.platform-switch-btn.active {
+  background: #001FD8;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 31, 216, 0.4);
+}
+
+.platform-switch-btn:hover:not(.active) {
+  color: #F8FAFC;
+}
+
+/* Badges Compartilhadas */
+.badge-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #EFF6FF;
+  color: #001FD8;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+.badge-generic {
+  background-color: #DCFCE7;
+  color: #166534;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+.badge-rx {
+  background-color: #FEE2E2;
+  color: #991B1B;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+}
+
+.badge-club {
+  background-color: #FEF08A;
+  color: #854D0E;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  background-color: var(--pm-red);
+  color: #FFFFFF;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #C10510;
+  transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
