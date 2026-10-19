@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ESTILOS OFICIAIS DO APP FARMÁCIA FARMAVIVA
+   ESTILOS DO APP FARMÁCIA FARMAVIVA
    ========================================================================== */
 
 :root {
@@ -81,13 +81,31 @@ input {
   width: 100%;
 }
 
-/* Utilitários de Scroll Horizontal Suave */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Utilitários de Scroll Oculto (Sem barras de rolagem visíveis) */
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar,
+#profile-tabs-nav::-webkit-scrollbar,
+[data-hide-scrollbar]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+.no-scrollbar,
+.hide-scrollbar,
+#profile-tabs-nav,
+[data-hide-scrollbar] {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Bloqueio total de rolagem para quando a tela de login/cadastro desktop estiver ativa */
+body.desktop-auth-active,
+html.desktop-auth-active {
+  overflow: hidden !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  position: relative !important;
 }
 
 /* ==========================================================================
@@ -189,15 +207,33 @@ input {
   background-color: var(--pm-app-blue);
   color: #FFFFFF;
   height: 48px;
-  padding: 0 1.5rem;
+  width: 100%;
+  padding: 0 1.5rem 0 1.85rem;
   display: flex;
-  justifyContent: space-between;
+  justify-content: space-between;
   align-items: center;
-  font-size: 0.85rem;
-  font-weight: 700;
   position: relative;
   z-index: 100;
   flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.status-bar-left {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  padding-top: 2px;
+}
+
+.status-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: #FFFFFF;
+  padding-top: 2px;
 }
 
 /* Home Indicator (Barrinha inferior do iOS) */
@@ -214,15 +250,19 @@ input {
 /* Header Azul Oficial do App FarmaViva */
 .app-header-blue {
   background-color: var(--pm-app-blue);
-  padding: 0.75rem 1.15rem 2.25rem 1.15rem;
+  padding: 0.65rem 1.15rem 2.25rem 1.15rem;
   color: #FFFFFF;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .app-header-top {
   display: flex;
-  justifyContent: space-between;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
   margin-bottom: 1.1rem;
 }
 
@@ -230,18 +270,20 @@ input {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  flex-shrink: 0;
 }
 
 .app-logo-box {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   background-color: var(--pm-app-red);
-  border-radius: 10px;
+  border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 8px rgba(227, 6, 19, 0.4);
+  flex-shrink: 0;
 }
 
 .app-greeting-text {
@@ -377,7 +419,7 @@ input {
   padding: 0.85rem 0.9rem;
   display: flex;
   flex-direction: column;
-  justifyContent: space-between;
+  justify-content: space-between;
   min-height: 88px;
   box-shadow: var(--shadow-card);
   cursor: pointer;
@@ -391,7 +433,7 @@ input {
 
 .app-action-card-top {
   display: flex;
-  justifyContent: space-between;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -446,7 +488,7 @@ input {
 
 .app-categories-header {
   display: flex;
-  justifyContent: space-between;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
 }
@@ -532,7 +574,7 @@ input {
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  justifyContent: space-between;
+  justify-content: space-between;
   position: relative;
   box-shadow: var(--shadow-card);
   min-height: 310px;
@@ -540,7 +582,7 @@ input {
 
 .app-product-top-row {
   display: flex;
-  justifyContent: space-between;
+  justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 0.35rem;
 }

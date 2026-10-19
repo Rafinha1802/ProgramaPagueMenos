@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
-import { Sparkles, ArrowRight, ShieldCheck, DollarSign, MessageSquare, Check } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import {
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  DollarSign,
+  MessageSquare,
+  Check,
+  Camera,
+  Paperclip,
+  FileText,
+  Image as ImageIcon,
+  X,
+  Upload,
+  Repeat
+} from 'lucide-react';
 
 export function AiCommerceSearchBar({
   onSendPrompt,
   onOpenExperience,
   hasActiveRecommendation = false,
-  onOpenExistingRecommendation = () => {}
+  onOpenExistingRecommendation = () => {},
+  onOpenCamera = () => {}
 }) {
   const [situationInput, setSituationInput] = useState('');
   const [budgetInput, setBudgetInput] = useState('');
   const [preferGenerics, setPreferGenerics] = useState(false);
+  const [attachment, setAttachment] = useState(null); // { type, name, previewUrl, intent }
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+
+  const fileInputRef = useRef(null);
+  const docInputRef = useRef(null);
 
   const budgetPresets = [
     { label: 'Sem limite', value: '' },
@@ -19,19 +39,115 @@ export function AiCommerceSearchBar({
   ];
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const prompt = situationInput.trim() || 'Produtos essenciais de saúde e bem-estar';
+    if (e) e.preventDefault();
+    let prompt = situationInput.trim();
+    if (!prompt) {
+      if (attachment) {
+        if (attachment.intent === 'generic') {
+          prompt = `Encontrar genérico equivalente mais barato para o medicamento ${attachment.name}`;
+        } else if (attachment.intent === 'repurchase') {
+          prompt = `Recomprar medicamento da imagem ${attachment.name}`;
+        } else {
+          prompt = `Produtos e medicamentos prescritos na receita médica ${attachment.name}`;
+        }
+      } else {
+        prompt = 'Produtos essenciais de saúde e bem-estar';
+      }
+    }
     const budget = budgetInput.trim() ? parseFloat(budgetInput.replace(',', '.')) : null;
 
-    onSendPrompt(prompt, budget, preferGenerics);
+    onSendPrompt(prompt, budget, preferGenerics, attachment);
   };
 
   const handleSelectBudgetPreset = (val) => {
     setBudgetInput(val);
   };
 
+  // Upload de foto do aparelho (Galeria)
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setAttachment({
+          type: 'photo',
+          name: file.name,
+          previewUrl: event.target.result,
+          intent: preferGenerics ? 'generic' : 'generic',
+          sizeText: `${(file.size / 1024).toFixed(0)} KB`
+        });
+        setShowAttachMenu(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Upload de documento (Receita Médica em PDF)
+  const handleDocUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAttachment({
+        type: 'document',
+        name: file.name,
+        previewUrl: null,
+        intent: 'prescription',
+        sizeText: `${(file.size / 1024).toFixed(0)} KB`
+      });
+      setShowAttachMenu(false);
+    }
+  };
+
+  // Exemplos rápidos para testar em 1 toque
+  const handleSelectSample = (sampleType) => {
+    if (sampleType === 'dorflex') {
+      setAttachment({
+        type: 'photo',
+        name: 'foto_caixa_dorflex.jpg',
+        previewUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=400&q=80',
+        intent: 'generic',
+        detectedMedication: 'Dorflex'
+      });
+      if (!situationInput) setSituationInput('Quero ver o genérico mais barato deste remédio para dor muscular');
+    } else if (sampleType === 'rivotril') {
+      setAttachment({
+        type: 'photo',
+        name: 'foto_rivotril_2mg.jpg',
+        previewUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80',
+        intent: 'generic',
+        detectedMedication: 'Rivotril'
+      });
+      if (!situationInput) setSituationInput('Buscar o genérico deste calmante que tomo habitualmente');
+    } else if (sampleType === 'receita') {
+      setAttachment({
+        type: 'document',
+        name: 'receita_digital_amoxicilina.pdf',
+        previewUrl: null,
+        intent: 'prescription',
+        detectedMedication: 'Amoxicilina'
+      });
+      if (!situationInput) setSituationInput('Preciso comprar os remédios da minha receita médica');
+    }
+    setShowAttachMenu(false);
+  };
+
   return (
     <div style={{ padding: '0 1rem', marginBottom: '1.25rem' }}>
+      {/* Inputs ocultos de arquivos para galeria e documentos */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handlePhotoUpload}
+      />
+      <input
+        ref={docInputRef}
+        type="file"
+        accept=".pdf,.doc,.docx,application/pdf"
+        style={{ display: 'none' }}
+        onChange={handleDocUpload}
+      />
+
       <div style={{
         background: 'linear-gradient(135deg, #001FD8 0%, #0017A3 100%)',
         borderRadius: '20px',
@@ -69,7 +185,7 @@ export function AiCommerceSearchBar({
             textTransform: 'uppercase'
           }}>
             <Sparkles size={12} color="#FDE047" />
-            <span>Chat IA Farmacêutica</span>
+            <span>Farmacêutica IA FarmaViva</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.68rem', color: '#93C5FD', fontWeight: 600 }}>
@@ -90,38 +206,28 @@ export function AiCommerceSearchBar({
             O que você precisa hoje?
           </h3>
           <p style={{ fontSize: '0.76rem', color: '#E2E8F0', marginTop: '0.2rem', lineHeight: 1.35 }}>
-            Escreva o que procura para sua situação e, se desejar, informe o total que quer gastar.
+            Descreva sua situação, tire foto do remédio ou anexe sua receita para ver o genérico ou recomprar:
           </p>
         </div>
 
         {/* Formulário Direto de Chat com a IA */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           
-          {/* 1. O que quer / Situação */}
+          {/* 1. O que quer / Situação + Botões de Foto e Anexo Integrados */}
           <div>
-            <label style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              fontSize: '0.74rem',
-              fontWeight: 700,
-              color: '#F1F5F9',
-              marginBottom: '0.35rem'
-            }}>
-              <MessageSquare size={13} color="#FDE047" />
-              <span>O que você quer ou para qual situação?</span>
-            </label>
             <div style={{
               display: 'flex',
               backgroundColor: '#FFFFFF',
-              borderRadius: '12px',
-              padding: '0.35rem 0.65rem',
+              borderRadius: '14px',
+              padding: '0.35rem 0.5rem 0.35rem 0.75rem',
               alignItems: 'center',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)'
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
+              gap: '0.4rem'
             }}>
+              <MessageSquare size={16} color="#001FD8" style={{ flexShrink: 0 }} />
               <input
                 type="text"
-                placeholder="Ex: 'Gripe e dor no corpo', 'Pele oleosa e acne', 'Kit viagem'..."
+                placeholder="Ex: 'Dor nas costas', 'Gripe e febre' ou use a câmera..."
                 value={situationInput}
                 onChange={(e) => setSituationInput(e.target.value)}
                 style={{
@@ -133,7 +239,224 @@ export function AiCommerceSearchBar({
                   padding: '0.35rem 0'
                 }}
               />
+
+              {/* Botões de Ação na mesma barra: Câmera + Anexo */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <button
+                  type="button"
+                  onClick={onOpenCamera}
+                  style={{
+                    backgroundColor: '#EFF6FF',
+                    color: '#001FD8',
+                    border: '1px solid #BFDBFE',
+                    borderRadius: '8px',
+                    padding: '0.35rem 0.5rem',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                    cursor: 'pointer'
+                  }}
+                  title="Tirar foto do medicamento ou receita"
+                >
+                  <Camera size={14} color="#001FD8" />
+                  <span style={{ fontSize: '0.68rem' }}>Foto</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAttachMenu(!showAttachMenu)}
+                  style={{
+                    backgroundColor: attachment ? '#FEF2F2' : '#F8FAFC',
+                    color: attachment ? '#DC2626' : '#64748B',
+                    border: attachment ? '1px solid #FECACA' : '1px solid #E2E8F0',
+                    borderRadius: '8px',
+                    padding: '0.35rem 0.45rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
+                  title="Anexar documento ou foto da galeria"
+                >
+                  <Paperclip size={14} />
+                </button>
+              </div>
             </div>
+
+            {/* Menu Dropdown de Opções de Anexo */}
+            {showAttachMenu && (
+              <div style={{
+                marginTop: '0.45rem',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '12px',
+                padding: '0.55rem',
+                color: '#1E293B',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.35rem',
+                animation: 'fadeIn 0.15s ease-out'
+              }}>
+                <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', padding: '0 0.25rem' }}>
+                  Anexar Medicamento ou Receita:
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      fileInputRef.current?.click();
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '0.4rem 0.55rem',
+                      backgroundColor: '#F8FAFC',
+                      borderRadius: '8px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: '#001FD8',
+                      border: '1px solid #E2E8F0',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <ImageIcon size={14} />
+                    <span>Galeria de Fotos</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      docInputRef.current?.click();
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '0.4rem 0.55rem',
+                      backgroundColor: '#F8FAFC',
+                      borderRadius: '8px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: '#DC2626',
+                      border: '1px solid #E2E8F0',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <FileText size={14} />
+                    <span>Receita (PDF)</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* PREVIEW DO ARQUIVO ANEXADO COM SELETOR DE INTENÇÃO */}
+            {attachment && (
+              <div style={{
+                marginTop: '0.5rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                color: '#0F172A',
+                borderRadius: '12px',
+                padding: '0.55rem 0.75rem',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.15)',
+                border: '1.5px solid #60A5FA'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+                    {attachment.previewUrl ? (
+                      <img
+                        src={attachment.previewUrl}
+                        alt="Anexo"
+                        style={{ width: '38px', height: '38px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #CBD5E1', flexShrink: 0 }}
+                      />
+                    ) : (
+                      <div style={{ width: '38px', height: '38px', backgroundColor: '#EFF6FF', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#001FD8', flexShrink: 0 }}>
+                        <FileText size={20} />
+                      </div>
+                    )}
+
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: '0.76rem', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
+                        {attachment.name}
+                      </div>
+                      <div style={{ fontSize: '0.66rem', color: '#64748B' }}>
+                        {attachment.type === 'document' ? 'Documento PDF Anexado' : 'Foto anexada com sucesso'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setAttachment(null)}
+                    style={{ color: '#94A3B8', padding: '0.2rem', cursor: 'pointer' }}
+                    title="Remover anexo"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Escolha do Objetivo com este anexo */}
+                <div style={{ marginTop: '0.45rem', paddingTop: '0.45rem', borderTop: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '0.66rem', fontWeight: 800, color: '#475569', marginBottom: '0.3rem' }}>
+                    O que fazer com este anexo?
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setAttachment({ ...attachment, intent: 'generic' })}
+                      style={{
+                        fontSize: '0.66rem',
+                        fontWeight: 800,
+                        padding: '0.22rem 0.55rem',
+                        borderRadius: '6px',
+                        backgroundColor: attachment.intent === 'generic' ? '#001FD8' : '#F1F5F9',
+                        color: attachment.intent === 'generic' ? '#FFFFFF' : '#334155',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      💊 Ver Genérico Mais Barato
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAttachment({ ...attachment, intent: 'repurchase' })}
+                      style={{
+                        fontSize: '0.66rem',
+                        fontWeight: 800,
+                        padding: '0.22rem 0.55rem',
+                        borderRadius: '6px',
+                        backgroundColor: attachment.intent === 'repurchase' ? '#001FD8' : '#F1F5F9',
+                        color: attachment.intent === 'repurchase' ? '#FFFFFF' : '#334155',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      🔄 Comprar Novamente
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAttachment({ ...attachment, intent: 'prescription' })}
+                      style={{
+                        fontSize: '0.66rem',
+                        fontWeight: 800,
+                        padding: '0.22rem 0.55rem',
+                        borderRadius: '6px',
+                        backgroundColor: attachment.intent === 'prescription' ? '#E30613' : '#F1F5F9',
+                        color: attachment.intent === 'prescription' ? '#FFFFFF' : '#334155',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      📋 Validar Receita Médica
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 2. Valor total que quer gastar (Opcional) */}
@@ -250,7 +573,6 @@ export function AiCommerceSearchBar({
           {/* Botão de Envio para a IA */}
           <button
             type="submit"
-            onClick={handleSubmit}
             style={{
               width: '100%',
               backgroundColor: 'var(--pm-app-red)',
@@ -270,7 +592,7 @@ export function AiCommerceSearchBar({
             }}
           >
             <Sparkles size={17} color="#FDE047" />
-            <span>Montar minha cesta com IA</span>
+            <span>{attachment ? 'Processar anexo e montar cesta com IA' : 'Montar minha cesta com IA'}</span>
             <ArrowRight size={17} />
           </button>
 
@@ -306,3 +628,4 @@ export function AiCommerceSearchBar({
     </div>
   );
 }
+export default AiCommerceSearchBar;

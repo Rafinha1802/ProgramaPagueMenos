@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, ShoppingBag, MapPin, Sparkles, User, Store, Smartphone, HelpCircle, ChevronRight, Mic, Camera } from 'lucide-react';
+import { Search, ShoppingBag, MapPin, Sparkles, User, Store, Smartphone, HelpCircle, ChevronRight, Mic } from 'lucide-react';
 
 export function Header({
   searchQuery,
@@ -11,7 +11,16 @@ export function Header({
   onOpenAiGuide,
   activeCategory,
   setActiveCategory,
-  onOpenSafetyModal
+  onOpenSafetyModal,
+  userSession,
+  onOpenAuth,
+  onOpenProfile,
+  onGoHome,
+  onOpenStoresModal,
+  onOpenAppModal,
+  onOpenHelpModal,
+  onOpenCepModal,
+  userLocationCep
 }) {
   const departments = [
     { id: 'ofertas', label: 'Ofertas', isRed: true },
@@ -30,15 +39,33 @@ export function Header({
       {/* 1. Barra Superior Azul Marinho (Exata como no print oficial) */}
       <div style={{ backgroundColor: '#001242', color: '#FFFFFF', fontSize: '0.74rem', padding: '0.35rem 0' }}>
         <div className="container" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0' }}>
+          <div
+            onClick={onOpenStoresModal}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0', transition: 'color 0.15s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#E2E8F0'}
+            title="Localizar farmácias FarmaViva mais próximas"
+          >
             <Store size={13} />
             <span>Nossas lojas</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0' }}>
+          <div
+            onClick={onOpenAppModal}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0', transition: 'color 0.15s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#E2E8F0'}
+            title="Baixar o aplicativo FarmaViva para celular"
+          >
             <Smartphone size={13} />
             <span>Baixe nosso APP</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0' }}>
+          <div
+            onClick={onOpenHelpModal}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0', transition: 'color 0.15s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#E2E8F0'}
+            title="Fale conosco, WhatsApp e SAC"
+          >
             <HelpCircle size={13} />
             <span>Precisa de ajuda</span>
           </div>
@@ -52,7 +79,10 @@ export function Header({
           {/* Logo Oficial FarmaViva (Quadrado Vermelho com Cruz Branca + Tipografia Azul) */}
           <div
             style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer', flexShrink: 0 }}
-            onClick={() => setActiveCategory('all')}
+            onClick={() => {
+              setActiveCategory('all');
+              if (onGoHome) onGoHome();
+            }}
           >
             <div style={{
               width: '40px',
@@ -127,7 +157,7 @@ export function Header({
                   boxShadow: '0 2px 6px rgba(0, 31, 216, 0.3)',
                   transition: 'transform 0.15s ease',
                   flexShrink: 0,
-                  marginLeft: '0.4rem'
+                  marginLeft: '0.2rem'
                 }}
                 title="Consultar Farmacêutica com IA"
               >
@@ -141,24 +171,89 @@ export function Header({
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexShrink: 0 }}>
             
             {/* CEP */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer' }}>
+            <div
+              onClick={onOpenCepModal}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer', padding: '0.3rem 0.5rem', borderRadius: '10px', transition: 'background 0.15s ease' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F1F5F9'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              title="Informar CEP para frete grátis e entrega rápida"
+            >
               <div style={{ color: '#001FD8' }}>
                 <MapPin size={20} strokeWidth={2.2} />
               </div>
               <div style={{ fontSize: '0.8rem', color: '#0F172A', lineHeight: 1.2 }}>
-                <span style={{ color: '#64748B', fontSize: '0.72rem' }}>Insira seu</span><br />
-                <strong style={{ color: '#001FD8' }}>CEP</strong>
+                <span style={{ color: '#64748B', fontSize: '0.72rem' }}>{userLocationCep ? 'Entregar em' : 'Insira seu'}</span><br />
+                <strong style={{ color: '#001FD8' }}>{userLocationCep || 'CEP'}</strong>
               </div>
             </div>
 
-            {/* Usuário / Login */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', cursor: 'pointer' }}>
-              <div style={{ color: '#001FD8' }}>
-                <User size={22} strokeWidth={2.2} />
+            {/* Usuário / Minha Conta */}
+            <div
+              onClick={() => {
+                if (userSession?.isLoggedIn) {
+                  if (onOpenProfile) onOpenProfile();
+                } else {
+                  if (onOpenAuth) onOpenAuth('login');
+                }
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                cursor: 'pointer',
+                padding: '0.3rem 0.65rem',
+                borderRadius: '12px',
+                transition: 'background 0.15s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F1F5F9'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              title={userSession?.isLoggedIn ? 'Acessar meu perfil e histórico de compras' : 'Fazer login ou criar cadastro'}
+            >
+              <div style={{
+                color: userSession?.isLoggedIn ? '#059669' : '#001FD8',
+                backgroundColor: userSession?.isLoggedIn ? '#DCFCE7' : '#EFF6FF',
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <User size={19} strokeWidth={2.2} />
               </div>
               <div style={{ fontSize: '0.8rem', color: '#0F172A', lineHeight: 1.25 }}>
-                <span style={{ color: '#64748B', fontSize: '0.72rem' }}>Bem-vindo!</span><br />
-                <strong style={{ color: '#001FD8' }}>Entre ou cadastre-se</strong>
+                {userSession?.isLoggedIn ? (
+                  <>
+                    <span style={{ color: '#059669', fontSize: '0.72rem', fontWeight: 800 }}>Olá, {userSession.name?.split(' ')[0]}</span><br />
+                    <strong style={{ color: '#001FD8' }}>Minha Conta & Pedidos</strong>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ color: '#64748B', fontSize: '0.72rem' }}>Bem-vindo!</span><br />
+                    <strong style={{ color: '#001FD8' }}>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onOpenAuth) onOpenAuth('login');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        Entre
+                      </span>{' '}
+                      ou{' '}
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onOpenAuth) onOpenAuth('register');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        cadastre-se
+                      </span>
+                    </strong>
+                  </>
+                )}
               </div>
             </div>
 
@@ -226,7 +321,10 @@ export function Header({
             {departments.map((dept) => (
               <button
                 key={dept.id}
-                onClick={() => setActiveCategory(dept.id === 'ofertas' ? 'all' : dept.id)}
+                onClick={() => {
+                  setActiveCategory(dept.id === 'ofertas' ? 'all' : dept.id);
+                  if (onGoHome) onGoHome();
+                }}
                 style={{
                   fontWeight: dept.isRed ? 800 : (activeCategory === dept.id ? 700 : 600),
                   color: dept.isRed ? '#E30613' : (activeCategory === dept.id ? '#001FD8' : '#334155'),

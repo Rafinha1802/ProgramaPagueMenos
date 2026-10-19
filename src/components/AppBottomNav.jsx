@@ -1,12 +1,13 @@
 import React from 'react';
-import { Home, LayoutGrid, Sparkles, Tag, ShoppingBag } from 'lucide-react';
+import { Home, LayoutGrid, Sparkles, User, ShoppingBag } from 'lucide-react';
 
 export function AppBottomNav({
   activeNav,
   setActiveNav,
   cartItemsCount,
   onOpenCart,
-  onOpenAiGuide
+  onOpenAiGuide,
+  onOpenProfile
 }) {
   return (
     <nav className="app-bottom-nav">
@@ -56,13 +57,16 @@ export function AppBottomNav({
         </span>
       </div>
 
-      {/* 4. Ofertas */}
+      {/* 4. Perfil & Meus Pedidos */}
       <div
-        className={`app-nav-item ${activeNav === 'ofertas' ? 'active' : ''}`}
-        onClick={() => setActiveNav('ofertas')}
+        className={`app-nav-item ${activeNav === 'profile' ? 'active' : ''}`}
+        onClick={() => {
+          setActiveNav('profile');
+          if (onOpenProfile) onOpenProfile();
+        }}
       >
-        <Tag size={22} strokeWidth={activeNav === 'ofertas' ? 2.5 : 1.8} />
-        <span>Ofertas</span>
+        <User size={22} strokeWidth={activeNav === 'profile' ? 2.5 : 1.8} />
+        <span>Perfil</span>
       </div>
 
       {/* 5. Sacola */}

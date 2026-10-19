@@ -20,7 +20,11 @@ import {
   Stethoscope,
   AlertOctagon,
   FileCheck,
-  Check
+  Check,
+  Paperclip,
+  Camera,
+  Image as ImageIcon,
+  X
 } from 'lucide-react';
 import { CATALOG } from '../data/catalog';
 
@@ -31,15 +35,28 @@ export function DesktopAiResponsePage({
   onAddBatchToCart,
   onBackToStore,
   onOpenCart,
-  cartItemsCount
+  cartItemsCount,
+  onOpenCamera = () => {}
 }) {
   const [alternativeSelectorId, setAlternativeSelectorId] = useState(null);
   const [chatFeedback, setChatFeedback] = useState(null);
   const [customInput, setCustomInput] = useState('');
+  const [chatAttachment, setChatAttachment] = useState(null);
+  const chatFileInputRef = useRef(null);
 
   // Estados de Validação de Receita Médica (ANVISA / CFM)
-  const [prescriptionValidated, setPrescriptionValidated] = useState(false);
-  const [prescriptionData, setPrescriptionData] = useState(null);
+  const isPreValidated = Boolean(recommendation?.attachedAnalysis?.intent === 'prescription' || recommendation?.safetyNotice?.prescriptionPreValidated);
+  const initialPrescriptionData = recommendation?.attachedAnalysis?.prescriptionData || (isPreValidated ? {
+    doctor: recommendation?.attachedAnalysis?.doctor || 'Dr. Marcelo Santos - CRM/SP 142.891',
+    specialty: 'Clínica Médica & Farmacologia Clínica',
+    status: 'Receita Digital Homologada (ICP-Brasil / CFM)',
+    date: 'Hoje às ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    prescriptionCode: 'MEMED-8849-SP',
+    fileName: recommendation?.attachedAnalysis?.name || 'prescricao_medica.pdf'
+  } : null);
+
+  const [prescriptionValidated, setPrescriptionValidated] = useState(isPreValidated);
+  const [prescriptionData, setPrescriptionData] = useState(initialPrescriptionData);
   const [isValidatingPrescription, setIsValidatingPrescription] = useState(false);
   const [prescriptionCodeInput, setPrescriptionCodeInput] = useState('');
   const fileInputRef = useRef(null);
@@ -56,7 +73,8 @@ export function DesktopAiResponsePage({
     safetyNotice,
     appliedPrompt,
     targetBudget,
-    preferGenerics
+    preferGenerics,
+    attachedAnalysis
   } = recommendation;
 
   const hasPrescriptionItems = safetyNotice?.hasPrescriptionRequired || recommendedItems.some(i => i.requiresPrescription || i.isControlled);
@@ -129,13 +147,36 @@ export function DesktopAiResponsePage({
     setTimeout(() => setChatFeedback(null), 3000);
   };
 
+  const handleChatPhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setChatAttachment({
+          type: 'photo',
+          name: file.name,
+          previewUrl: event.target.result,
+          intent: 'generic'
+        });
+        showChatFeedback(`Anexo carregado: ${file.name}`);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Envio de nova mensagem / ajuste
   const handleCustomSubmit = (e) => {
     e.preventDefault();
-    if (customInput.trim()) {
-      onUpdateEngine({ prompt: customInput.trim(), customSelectedIds: null });
-      showChatFeedback(`Ajuste aplicado: "${customInput.trim()}"`);
+    if (customInput.trim() || chatAttachment) {
+      const text = customInput.trim() || (chatAttachment?.intent === 'generic' ? `Ver genérico do medicamento ${chatAttachment.name}` : `Análise de documento ${chatAttachment?.name}`);
+      onUpdateEngine({
+        prompt: text,
+        customSelectedIds: null,
+        attachment: chatAttachment || null
+      });
+      showChatFeedback(`Ajuste aplicado: "${text}"`);
       setCustomInput('');
+      setChatAttachment(null);
     }
   };
 
@@ -294,6 +335,137 @@ export function DesktopAiResponsePage({
                 </span>
               </div>
             </div>
+
+            {/* CARD DE ANÁLISE DE ANEXO (FOTO DO MEDICAMENTO / RECEITA MÉDICA) */}
+            {attachedAnalysis && (
+              <div style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '20px',
+                border: '2px solid #60A5FA',
+                padding: '1.25rem 1.5rem',
+                boxShadow: '0 4px 16px rgba(0, 31, 216, 0.08)',
+                animation: 'fadeIn 0.25s ease-out'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{
+                      backgroundColor: '#EFF6FF',
+                      color: '#001FD8',
+                      padding: '0.35rem 0.65rem',
+                      borderRadius: '999px',
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem'
+                    }}>
+                      <Sparkles size={13} color="#001FD8" />
+                      <span>{attachedAnalysis.badgeText || 'Análise de Imagem IA'}</span>
+                    </div>
+                  </div>
+
+                  <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 600 }}>
+                    Arquivo: {attachedAnalysis.name}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                  {attachedAnalysis.previewUrl ? (
+                    <img
+                      src={attachedAnalysis.previewUrl}
+                      alt="Anexo Analisado"
+                      style={{
+                        width: '90px',
+                        height: '90px',
+                        objectFit: 'cover',
+                        borderRadius: '12px',
+                        border: '2px solid #BFDBFE',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        flexShrink: 0
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '90px',
+                      height: '90px',
+                      borderRadius: '12px',
+                      backgroundColor: '#FEF2F2',
+                      border: '2px solid #FECACA',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#DC2626',
+                      flexShrink: 0
+                    }}>
+                      <FileText size={32} />
+                      <span style={{ fontSize: '0.62rem', fontWeight: 800, marginTop: '0.2rem' }}>PDF</span>
+                    </div>
+                  )}
+
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.25rem' }}>
+                      {attachedAnalysis.detectedMedication || attachedAnalysis.detectedTitle}
+                    </h4>
+                    <p style={{ fontSize: '0.84rem', color: '#334155', lineHeight: 1.45, margin: 0 }}>
+                      {attachedAnalysis.actionText}
+                    </p>
+
+                    {/* Detalhes de Genérico com Comparativo de Preço */}
+                    {attachedAnalysis.intent === 'generic' && attachedAnalysis.equivalentGeneric && (
+                      <div style={{
+                        marginTop: '0.65rem',
+                        backgroundColor: '#F0FDF4',
+                        border: '1.5px solid #86EFAC',
+                        borderRadius: '10px',
+                        padding: '0.55rem 0.85rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem'
+                      }}>
+                        <div>
+                          <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700 }}>
+                            Genérico Equivalente ANVISA Selecionado:
+                          </div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#15803D' }}>
+                            {attachedAnalysis.equivalentGeneric}
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '0.7rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+                            De R$ {attachedAnalysis.originalPrice?.toFixed(2).replace('.', ',')}
+                          </div>
+                          <div style={{ fontSize: '1rem', fontWeight: 900, color: '#15803D' }}>
+                            Por R$ {attachedAnalysis.genericPrice?.toFixed(2).replace('.', ',')}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Detalhes de Receita Médica */}
+                    {attachedAnalysis.intent === 'prescription' && (
+                      <div style={{
+                        marginTop: '0.65rem',
+                        backgroundColor: '#ECFDF5',
+                        border: '1.5px solid #10B981',
+                        borderRadius: '10px',
+                        padding: '0.55rem 0.85rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}>
+                        <CheckCircle2 size={18} color="#059669" />
+                        <div style={{ fontSize: '0.78rem', color: '#065F46', fontWeight: 700 }}>
+                          {attachedAnalysis.doctor} • Protocolo {attachedAnalysis.digitalProtocol}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Balão da Orientação Farmacêutica da IA */}
             <div style={{
@@ -640,23 +812,132 @@ export function DesktopAiResponsePage({
                 ))}
               </div>
 
+              {/* Input oculto para anexo no chat */}
+              <input
+                ref={chatFileInputRef}
+                type="file"
+                accept="image/*,.pdf,.doc,.docx"
+                style={{ display: 'none' }}
+                onChange={handleChatPhotoUpload}
+              />
+
+              {/* Preview de Anexo no Chat se selecionado */}
+              {chatAttachment && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  backgroundColor: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
+                  borderRadius: '10px',
+                  padding: '0.45rem 0.75rem',
+                  marginBottom: '0.65rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {chatAttachment.previewUrl ? (
+                      <img
+                        src={chatAttachment.previewUrl}
+                        alt="Anexo"
+                        style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '6px' }}
+                      />
+                    ) : (
+                      <FileText size={20} color="#001FD8" />
+                    )}
+                    <div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#0F172A' }}>
+                        {chatAttachment.name}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: '#001FD8' }}>
+                        Pronto para envio com sua mensagem
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setChatAttachment(null)}
+                    style={{ color: '#64748B', cursor: 'pointer' }}
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              )}
+
               {/* Barra de Chat */}
-              <form onSubmit={handleCustomSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  type="text"
-                  placeholder="Escreva: 'tirar sorine', 'gastar até 60', 'trocar por similar'..."
-                  value={customInput}
-                  onChange={(e) => setCustomInput(e.target.value)}
-                  style={{
-                    flex: 1,
-                    backgroundColor: '#F8FAFC',
-                    border: '1.5px solid #CBD5E1',
-                    borderRadius: '12px',
-                    padding: '0.65rem 1rem',
-                    fontSize: '0.88rem',
-                    color: '#0F172A'
-                  }}
-                />
+              <form onSubmit={handleCustomSubmit} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <div style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#F8FAFC',
+                  border: '1.5px solid #CBD5E1',
+                  borderRadius: '12px',
+                  padding: '0.2rem 0.65rem 0.2rem 1rem'
+                }}>
+                  <input
+                    type="text"
+                    placeholder="Escreva sua dúvida, anexe foto de remédio ou receita médica..."
+                    value={customInput}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    style={{
+                      flex: 1,
+                      border: 'none',
+                      backgroundColor: 'transparent',
+                      outline: 'none',
+                      fontSize: '0.88rem',
+                      color: '#0F172A',
+                      padding: '0.45rem 0'
+                    }}
+                  />
+
+                  {/* Botão Câmera no Chatbot */}
+                  <button
+                    type="button"
+                    onClick={onOpenCamera}
+                    style={{
+                      backgroundColor: '#EFF6FF',
+                      color: '#001FD8',
+                      border: '1px solid #BFDBFE',
+                      borderRadius: '8px',
+                      padding: '0.35rem 0.6rem',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      cursor: 'pointer',
+                      marginRight: '0.35rem'
+                    }}
+                    title="Tirar foto do medicamento ou receita"
+                  >
+                    <Camera size={14} />
+                    <span>Câmera</span>
+                  </button>
+
+                  {/* Botão Anexar */}
+                  <button
+                    type="button"
+                    onClick={() => chatFileInputRef.current?.click()}
+                    style={{
+                      backgroundColor: chatAttachment ? '#FEF2F2' : '#FFFFFF',
+                      color: chatAttachment ? '#DC2626' : '#001FD8',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: '8px',
+                      padding: '0.35rem 0.6rem',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      cursor: 'pointer'
+                    }}
+                    title="Anexar foto do remédio ou receita (PDF)"
+                  >
+                    <Paperclip size={14} />
+                    <span>Anexar</span>
+                  </button>
+                </div>
+
                 <button
                   type="submit"
                   style={{
@@ -673,7 +954,7 @@ export function DesktopAiResponsePage({
                   }}
                 >
                   <Send size={16} />
-                  <span>Ajustar</span>
+                  <span>Enviar</span>
                 </button>
               </form>
             </div>

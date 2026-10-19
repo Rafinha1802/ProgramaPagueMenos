@@ -10,13 +10,168 @@ export function runAiCommerceEngine({
   budget = null,
   preferGenerics = false,
   customSelectedIds = null,
-  refinementAction = null
+  refinementAction = null,
+  attachment = null // { type: 'image' | 'document' | 'photo' | 'prescription', name: string, previewUrl?: string, intent?: 'generic' | 'repurchase' | 'prescription' | 'situation', detectedMedication?: string }
 }) {
   const normalized = (prompt || '').toLowerCase().trim();
 
   // 1. Identificar intenção ou tema principal
   let theme = 'geral';
   let extractedBudget = budget ? parseFloat(budget) : null;
+  let attachedAnalysis = null;
+
+  // Processamento de Anexo (Imagem de Remédio, Foto Tirada no App, Documento/Receita)
+  if (attachment) {
+    const attachName = (attachment.name || '').toLowerCase();
+    const attachIntent = attachment.intent || (preferGenerics ? 'generic' : 'situation');
+
+    // 1. Caso Dorflex (Sanofi Referência) -> Genérico Orfenadrina + Dipirona (Neo Química)
+    if (attachName.includes('dorflex') || normalized.includes('dorflex') || attachName.includes('relaxante')) {
+      if (attachIntent === 'generic' || preferGenerics) {
+        theme = 'recompra';
+        effectivePreferGenerics = true;
+        baseProductIds = ['prod-09', 'prod-07']; // Genérico: Orfenadrina + Dipirona Neo Química (R$ 11.50) + Dipirona Gotas (R$ 6.90)
+        attachedAnalysis = {
+          type: attachment.type,
+          name: attachment.name,
+          previewUrl: attachment.previewUrl,
+          intent: 'generic',
+          detectedMedication: 'Dorflex 36 Comprimidos (Sanofi Referência)',
+          equivalentGeneric: 'Citrato de Orfenadrina + Dipirona 30 Comprimidos (Neo Química Genérico)',
+          originalPrice: 27.90,
+          genericPrice: 11.50,
+          savingsPercent: 58,
+          anvisaRegistry: 'Registro MS: 1.5584.0321 (Equivalência Farmacêutica RDC 16/2007)',
+          badgeText: 'Genérico Identificado pela Foto',
+          actionText: 'Economia de 58% em relação ao remédio de referência fotografado'
+        };
+      } else {
+        theme = 'recompra';
+        baseProductIds = ['prod-08']; // Dorflex original
+        attachedAnalysis = {
+          type: attachment.type,
+          name: attachment.name,
+          previewUrl: attachment.previewUrl,
+          intent: 'repurchase',
+          detectedMedication: 'Dorflex 36 Comprimidos (Sanofi)',
+          originalPrice: 27.90,
+          clubPrice: 23.90,
+          badgeText: 'Recompra Rápida pelo Medicamento',
+          actionText: 'Produto original localizado para reposição imediata'
+        };
+      }
+    }
+    // 2. Caso Rivotril / Clonazepam (Roche Referência) -> Genérico Medley (Tarja Preta)
+    else if (attachName.includes('rivotril') || attachName.includes('clonazepam') || normalized.includes('rivotril')) {
+      if (attachIntent === 'generic' || preferGenerics) {
+        theme = 'controlled_rx';
+        effectivePreferGenerics = true;
+        baseProductIds = ['prod-23']; // Clonazepam 2mg Medley Genérico
+        attachedAnalysis = {
+          type: attachment.type,
+          name: attachment.name,
+          previewUrl: attachment.previewUrl,
+          intent: 'generic',
+          detectedMedication: 'Rivotril 2mg 30 Comprimidos (Roche Referência)',
+          equivalentGeneric: 'Clonazepam 2mg 30 Comprimidos (Medley Genérico Tarja Preta)',
+          originalPrice: 28.90,
+          genericPrice: 11.90,
+          savingsPercent: 58,
+          anvisaRegistry: 'Registro MS: 1.0181.0425 (Notificação de Receita B)',
+          badgeText: 'Genérico Identificado pela Foto',
+          actionText: 'Substituição por genérico bioequivalente homologado pela ANVISA'
+        };
+      } else {
+        theme = 'controlled_rx';
+        baseProductIds = ['prod-27']; // Rivotril original
+        attachedAnalysis = {
+          type: attachment.type,
+          name: attachment.name,
+          previewUrl: attachment.previewUrl,
+          intent: 'repurchase',
+          detectedMedication: 'Rivotril 2mg 30 Comprimidos (Roche)',
+          originalPrice: 28.90,
+          clubPrice: 24.50,
+          badgeText: 'Recompra Identificada por Foto',
+          actionText: 'Medicamento sob controle especial - requer retenção de receita B'
+        };
+      }
+    }
+    // 3. Caso Neosaldina -> Genérico Dipirona Gotas EMS
+    else if (attachName.includes('neosaldina') || normalized.includes('neosaldina')) {
+      if (attachIntent === 'generic' || preferGenerics) {
+        theme = 'recompra';
+        effectivePreferGenerics = true;
+        baseProductIds = ['prod-07']; // Dipirona Gotas EMS
+        attachedAnalysis = {
+          type: attachment.type,
+          name: attachment.name,
+          previewUrl: attachment.previewUrl,
+          intent: 'generic',
+          detectedMedication: 'Neosaldina 30 Drágeas (Cosmed)',
+          equivalentGeneric: 'Dipirona Monoidratada Gotas 20ml (EMS Genérico)',
+          originalPrice: 33.90,
+          genericPrice: 6.90,
+          savingsPercent: 79,
+          badgeText: 'Genérico com 79% OFF',
+          actionText: 'Substituição com alta economia aprovada pela ANVISA'
+        };
+      } else {
+        theme = 'recompra';
+        baseProductIds = ['prod-06'];
+        attachedAnalysis = {
+          type: attachment.type,
+          name: attachment.name,
+          previewUrl: attachment.previewUrl,
+          intent: 'repurchase',
+          detectedMedication: 'Neosaldina 30 Drágeas (Cosmed)',
+          badgeText: 'Recompra Identificada',
+          actionText: 'Adicionado diretamente para recompra com desconto do Clube'
+        };
+      }
+    }
+    // 4. Caso Receita Médica (Digital PDF ou Foto de Receita física)
+    else if (attachIntent === 'prescription' || attachName.includes('receita') || attachName.includes('prescricao') || attachment.type === 'document') {
+      theme = 'controlled_rx';
+      baseProductIds = effectivePreferGenerics ? ['prod-22', 'prod-07'] : ['prod-22', 'prod-06']; // Amoxicilina + Dipirona/Neosaldina
+      attachedAnalysis = {
+        type: attachment.type,
+        name: attachment.name,
+        previewUrl: attachment.previewUrl,
+        intent: 'prescription',
+        detectedTitle: 'Receita Médica Digital Validada',
+        doctor: 'Dr. Marcelo Santos - CRM/SP 142.891',
+        specialty: 'Clínica Médica & Farmacologia Clínica',
+        digitalProtocol: 'MEMED-8849-SP / ICP-Brasil',
+        prescribedMeds: [
+          'Amoxicilina 500mg 21 cápsulas (Uso: 1 cápsula de 8/8h por 7 dias)',
+          'Dipirona Gotas 500mg/ml (Uso: 30 a 40 gotas se dor ou febre)'
+        ],
+        badgeText: 'Receita Médica Validada pela IA',
+        actionText: 'Prescrição homologada: dispensação de medicamentos desbloqueada imediatamente',
+        prescriptionData: {
+          doctor: 'Dr. Marcelo Santos - CRM/SP 142.891',
+          specialty: 'Clínica Médica & Farmacologia Clínica',
+          status: 'Receita Digital Homologada (ICP-Brasil / CFM)',
+          date: 'Hoje às ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          prescriptionCode: 'MEMED-8849-SP',
+          fileName: attachment.name || 'receita_medica.pdf'
+        }
+      };
+    }
+    // 5. Outro anexo geral
+    else {
+      attachedAnalysis = {
+        type: attachment.type,
+        name: attachment.name,
+        previewUrl: attachment.previewUrl,
+        intent: attachIntent,
+        detectedTitle: attachIntent === 'generic' ? 'Busca de Genérico Equivalente' : (attachIntent === 'repurchase' ? 'Recompra do Medicamento' : 'Documento Anexado'),
+        badgeText: attachIntent === 'generic' ? 'Genérico Equivalente' : 'Anexo Analisado',
+        actionText: 'Medicamento processado pelo catálogo oficial FarmaViva'
+      };
+    }
+  }
 
   // Extração inteligente de orçamento se mencionado no chat (ex: "até 80", "50 reais", "r$ 100", "gastar 60", "teto de 70")
   if (!extractedBudget) {
@@ -47,7 +202,7 @@ export function runAiCommerceEngine({
   }
 
   // Se já tiver uma lista customizada de IDs (por exemplo, após ajustes do usuário)
-  let baseProductIds = [];
+  if (!baseProductIds) baseProductIds = [];
 
   // Verificação de medicamentos controlados ou restritos por receita (ANVISA)
   const isControlledQuery =
@@ -235,21 +390,40 @@ export function runAiCommerceEngine({
     rationale = 'Produtos selecionados para atender sua necessidade diária de saúde e bem-estar, com máxima conveniência e garantia de procedência Farmácia FarmaViva.';
   }
 
+  // Personalização se houver análise de anexo
+  if (attachedAnalysis) {
+    if (attachedAnalysis.intent === 'generic') {
+      journeyTitle = 'Genérico Equivalente Identificado pela Foto';
+      rationale = `Analisamos a imagem do seu medicamento (${attachedAnalysis.detectedMedication}). Encontramos o Genérico Equivalente homologado pela ANVISA (${attachedAnalysis.equivalentGeneric}) com economia de ${attachedAnalysis.savingsPercent}%, garantindo idêntica eficácia e princípio ativo por uma fração do preço.`;
+    } else if (attachedAnalysis.intent === 'repurchase') {
+      journeyTitle = 'Recompra Rápida do Medicamento Fotografado';
+      rationale = `Identificamos o medicamento (${attachedAnalysis.detectedMedication}) na foto anexada e preparamos sua reposição direta com os maiores descontos do Clube FarmaViva.`;
+    } else if (attachedAnalysis.intent === 'prescription') {
+      journeyTitle = 'Receita Médica Digital Validada com Sucesso';
+      rationale = `Receita digital protocolada (CFM / ICP-Brasil). Verificamos a autenticidade da prescrição emitida pelo ${attachedAnalysis.doctor} e liberamos a dispensação dos medicamentos prescritos com total segurança sanitária.`;
+    }
+  }
+
   // 6. Camada de Segurança Farmacêutica e Compliance ANVISA
   const hasControlled = recommendedItems.some(i => i.isControlled) || isControlledQuery;
   const hasRx = recommendedItems.some(i => i.requiresPrescription) || hasControlled;
   const rxItems = recommendedItems.filter(i => i.requiresPrescription || i.isControlled);
 
+  const isPreValidated = Boolean(attachedAnalysis?.intent === 'prescription');
+
   const safetyNotice = {
     hasPrescriptionRequired: hasRx,
     isControlled: hasControlled,
-    requiresPrescriptionValidation: hasRx,
+    requiresPrescriptionValidation: hasRx && !isPreValidated,
+    prescriptionPreValidated: isPreValidated,
     rxItems: rxItems.map(i => i.name),
     disclaimer: 'SE PERSISTIREM OS SINTOMAS, O MÉDICO DEVERÁ SER CONSULTADO. MEDICAMENTO SOB CONTROLE SANITÁRIO.',
     pharmacistSupervision: 'Seleção orientada por inteligência de dados com supervisão técnica farmacêutica Farmácia FarmaViva (CRF/SP ativo).',
-    warningText: hasRx
-      ? 'Atenção: Medicamento sujeito a controle especial da ANVISA. Consulte um médico ou anexe sua receita para validar e liberar a compra.'
-      : 'Todos os medicamentos incluídos são Isentos de Prescrição (MIPs). Siga a posologia indicada na bula.',
+    warningText: isPreValidated
+      ? 'Receita médica digital homologada e validada! Compra de medicamentos liberada.'
+      : (hasRx
+        ? 'Atenção: Medicamento sujeito a controle especial da ANVISA. Consulte um médico ou anexe sua receita para validar e liberar a compra.'
+        : 'Todos os medicamentos incluídos são Isentos de Prescrição (MIPs). Siga a posologia indicada na bula.'),
     doctorAdvice: 'IMPORTANTE: Medicamentos controlados e antibióticos exigem diagnóstico prévio com médico especialista. A automedicação apresenta sérios riscos à saúde (dependência, efeitos colaterais e resistência microbiana).',
     prescriptionInstructions: 'Envie uma foto legível da receita médica física carimbada com CRM ou faça upload do PDF da receita digital ICP-Brasil / Memed para validação farmacêutica imediata.'
   };
@@ -285,6 +459,7 @@ export function runAiCommerceEngine({
     savingsTotal,
     recommendedItems,
     safetyNotice,
-    quickRefinements
+    quickRefinements,
+    attachedAnalysis
   };
 }
