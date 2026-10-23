@@ -24,7 +24,11 @@ import {
   Edit2,
   Trash2,
   Search,
-  Filter
+  Filter,
+  Mail,
+  TrendingUp,
+  Check,
+  Sparkles
 } from 'lucide-react';
 
 export function UserProfilePage({
@@ -233,7 +237,7 @@ export function UserProfilePage({
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', padding: isMobile ? '0.75rem 0 5rem 0' : '2rem 0 4rem 0' }}>
       <div className="container" style={{ maxWidth: isMobile ? '100%' : '1180px', padding: isMobile ? '0 0.85rem' : '0 1.5rem' }}>
-        
+
         {/* Barra de Topo / Navegação Voltar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isMobile ? '0.85rem' : '1.5rem' }}>
           <button
@@ -280,136 +284,284 @@ export function UserProfilePage({
 
         {/* 1. Header do Perfil do Cliente */}
         <div style={{
-          background: 'linear-gradient(135deg, #001FD8 0%, #001594 70%, #000E5E 100%)',
-          borderRadius: isMobile ? '18px' : '24px',
-          padding: isMobile ? '1.15rem 1rem' : '2rem 2.5rem',
+          background: 'linear-gradient(135deg, #050B38 0%, #001FD8 50%, #00125A 100%)',
+          borderRadius: '24px',
+          padding: '2rem 2.5rem',
           color: '#FFFFFF',
-          boxShadow: '0 8px 24px rgba(0, 31, 216, 0.22)',
-          marginBottom: isMobile ? '0.85rem' : '1.75rem',
+          boxShadow: '0 20px 45px -12px rgba(0, 31, 216, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.12) inset',
+          marginBottom: '1.75rem',
           position: 'relative',
           overflow: 'hidden'
         }}>
-          {/* Círculo decorativo */}
+          {/* Efeitos Radiais*/}
           <div style={{
             position: 'absolute',
-            top: '-50px',
-            right: '-50px',
-            width: '240px',
-            height: '240px',
+            top: '-70px',
+            right: '-40px',
+            width: '340px',
+            height: '340px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%)',
-            pointerEvents: 'none'
+            background: 'radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(56, 189, 248, 0) 70%)',
+            pointerEvents: 'none',
+            filter: 'blur(25px)'
+          }} />
+          <div style={{
+            position: 'absolute',
+            bottom: '-60px',
+            left: '15%',
+            width: '280px',
+            height: '280px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(147, 51, 234, 0.22) 0%, rgba(147, 51, 234, 0) 70%)',
+            pointerEvents: 'none',
+            filter: 'blur(30px)'
           }} />
 
           <div style={{
             display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            alignItems: isMobile ? 'flex-start' : 'center',
+            alignItems: 'center',
             justifyContent: 'space-between',
-            gap: isMobile ? '1rem' : '1.5rem',
+            gap: '2rem',
             position: 'relative',
-            zIndex: 2
+            zIndex: 2,
+            flexWrap: 'wrap'
           }}>
-            {/* Avatar & Informações Principais */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '0.85rem' : '1.25rem', width: '100%' }}>
-              <div style={{
-                width: isMobile ? '56px' : '76px',
-                height: isMobile ? '56px' : '76px',
-                borderRadius: '50%',
-                backgroundColor: '#FFFFFF',
-                color: '#001FD8',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: isMobile ? '1.5rem' : '2.2rem',
-                fontWeight: 900,
-                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                border: '3px solid #93C5FD',
-                flexShrink: 0
-              }}>
-                {formData.name.charAt(0)}
+            {/* Avatar & Informações do Usuário */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.35rem', flex: '1 1 380px' }}>
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 100%)',
+                  color: '#001FD8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2.2rem',
+                  fontWeight: 900,
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.25), 0 0 0 4px rgba(56, 189, 248, 0.35)',
+                  border: '3px solid rgba(255, 255, 255, 0.95)'
+                }}>
+                  {formData.name.charAt(0)}
+                </div>
+                {/* Selo de Verificado */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '2px',
+                  right: '2px',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  backgroundColor: '#10B981',
+                  border: '2.5px solid #FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                }} title="Cadastro e CPF Validados">
+                  <Check size={13} color="#FFFFFF" strokeWidth={3.5} />
+                </div>
               </div>
+
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: isMobile ? '1.2rem' : '1.85rem', fontWeight: 900, margin: 0, letterSpacing: '-0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '0.45rem' }}>
+                  <h1 style={{
+                    fontSize: '1.85rem',
+                    fontWeight: 900,
+                    margin: 0,
+                    letterSpacing: '-0.4px',
+                    color: '#FFFFFF',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                  }}>
                     {formData.name}
                   </h1>
+
+                  {/* Badge Cliente Ouro Shimmer */}
                   <span style={{
-                    backgroundColor: '#FDE047',
+                    background: 'linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #D97706 100%)',
                     color: '#0F172A',
-                    fontSize: isMobile ? '0.66rem' : '0.72rem',
+                    fontSize: '0.74rem',
                     fontWeight: 900,
-                    padding: '0.15rem 0.55rem',
+                    padding: '0.22rem 0.65rem',
                     borderRadius: '999px',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.25rem'
+                    gap: '0.35rem',
+                    boxShadow: '0 3px 10px rgba(245, 158, 11, 0.45)',
+                    border: '1px solid rgba(255, 255, 255, 0.4)'
                   }}>
-                    <Award size={12} color="#D97706" />
-                    Cliente Ouro
+                    <Award size={13} color="#78350F" strokeWidth={2.5} />
+                    <span>Cliente Ouro FarmaViva</span>
                   </span>
                 </div>
-                <div style={{ fontSize: isMobile ? '0.74rem' : '0.85rem', color: '#BAE6FD', marginTop: '0.2rem', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '0.1rem' : '1rem' }}>
-                  <span>E-mail: <strong>{formData.email}</strong></span>
-                  <span>CPF: <strong>{formData.cpf}</strong></span>
+
+                {/* Pills de Contato e CPF */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    padding: '0.28rem 0.75rem',
+                    borderRadius: '999px',
+                    fontSize: '0.78rem',
+                    color: '#E0F2FE',
+                    border: '1px solid rgba(255, 255, 255, 0.14)'
+                  }}>
+                    <Mail size={13} color="#93C5FD" />
+                    <span>{formData.email}</span>
+                  </span>
+
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    padding: '0.28rem 0.75rem',
+                    borderRadius: '999px',
+                    fontSize: '0.78rem',
+                    color: '#E0F2FE',
+                    border: '1px solid rgba(255, 255, 255, 0.14)'
+                  }}>
+                    <ShieldCheck size={13} color="#86EFAC" />
+                    <span>CPF: <strong>{formData.cpf}</strong></span>
+                  </span>
+
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    padding: '0.28rem 0.65rem',
+                    borderRadius: '999px',
+                    fontSize: '0.74rem',
+                    color: '#BAE6FD',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <Sparkles size={12} color="#FDE047" />
+                    <span>Clube Ativo</span>
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Badges de Benefícios do Usuário */}
+            {/* 3 Cards de Métricas em Glassmorphism Elegante */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: isMobile ? '0.4rem' : '1rem',
-              backgroundColor: 'rgba(255,255,255,0.12)',
-              padding: isMobile ? '0.65rem 0.5rem' : '0.85rem 1.25rem',
-              borderRadius: isMobile ? '14px' : '16px',
-              backdropFilter: 'blur(8px)',
-              width: isMobile ? '100%' : 'auto',
-              boxSizing: 'border-box'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.85rem',
+              flexWrap: 'wrap',
+              flexShrink: 0
             }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: isMobile ? '1.15rem' : '1.35rem', fontWeight: 900, color: '#FDE047' }}>4</div>
-                <div style={{ fontSize: isMobile ? '0.68rem' : '0.72rem', color: '#E2E8F0', fontWeight: 600 }}>Pedidos</div>
+              {/* Card 1: Pedidos */}
+              <div style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.09)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255, 255, 255, 0.18)',
+                borderRadius: '16px',
+                padding: '0.85rem 1.15rem',
+                minWidth: '120px',
+                boxShadow: '0 6px 18px rgba(0, 0, 0, 0.12)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.15rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#BAE6FD', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Pedidos
+                  </span>
+                  <Package size={15} color="#93C5FD" />
+                </div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FFFFFF', lineHeight: 1.1 }}>
+                  4
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#93C5FD', fontWeight: 600 }}>
+                  1 em andamento
+                </div>
               </div>
-              <div style={{ textAlign: 'center', borderLeft: '1px solid rgba(255,255,255,0.2)', borderRight: '1px solid rgba(255,255,255,0.2)' }}>
-                <div style={{ fontSize: isMobile ? '1.15rem' : '1.35rem', fontWeight: 900, color: '#4ADE80' }}>R$ 184</div>
-                <div style={{ fontSize: isMobile ? '0.68rem' : '0.72rem', color: '#E2E8F0', fontWeight: 600 }}>Economia</div>
+
+              {/* Card 2: Economia */}
+              <div style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.09)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(74, 222, 128, 0.35)',
+                borderRadius: '16px',
+                padding: '0.85rem 1.15rem',
+                minWidth: '130px',
+                boxShadow: '0 6px 18px rgba(0, 0, 0, 0.12)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.15rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#86EFAC', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Economia
+                  </span>
+                  <TrendingUp size={15} color="#4ADE80" />
+                </div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#4ADE80', lineHeight: 1.1 }}>
+                  R$ 184
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#BAE6FD', fontWeight: 600 }}>
+                  Clube FarmaViva
+                </div>
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: isMobile ? '1.15rem' : '1.35rem', fontWeight: 900, color: '#FFFFFF' }}>420</div>
-                <div style={{ fontSize: isMobile ? '0.68rem' : '0.72rem', color: '#E2E8F0', fontWeight: 600 }}>Pontos</div>
+
+              {/* Card 3: Pontos */}
+              <div style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.09)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(253, 224, 71, 0.35)',
+                borderRadius: '16px',
+                padding: '0.85rem 1.15rem',
+                minWidth: '120px',
+                boxShadow: '0 6px 18px rgba(0, 0, 0, 0.12)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.15rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#FDE68A', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Pontos
+                  </span>
+                  <Award size={15} color="#FDE047" />
+                </div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FDE047', lineHeight: 1.1 }}>
+                  420
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#FEF08A', fontWeight: 600 }}>
+                  Resgatar R$ 25
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 2. Menu de Abas do Perfil (Completamente sem barra de rolagem e com chips nativos) */}
+        {/* 2. Menu de Abas do Perfil (Grid Equilibrado de 5 Colunas - Sem Espaço Vazio) */}
         <div
           id="profile-tabs-nav"
-          className="hide-scrollbar"
           style={{
-            display: 'flex',
-            gap: isMobile ? '0.4rem' : '0.5rem',
-            overflowX: 'auto',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            gap: '0.65rem',
             backgroundColor: '#FFFFFF',
-            padding: isMobile ? '0.35rem' : '0.5rem',
-            borderRadius: isMobile ? '14px' : '16px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
-            marginBottom: isMobile ? '1rem' : '1.5rem',
+            padding: '0.6rem',
+            borderRadius: '18px',
+            boxShadow: '0 4px 18px rgba(15, 23, 42, 0.05)',
+            marginBottom: '1.75rem',
             border: '1px solid #E2E8F0',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch'
+            boxSizing: 'border-box'
           }}
         >
           {[
-            { id: 'orders', label: isMobile ? 'Pedidos' : 'Histórico de Compras', icon: <Package size={isMobile ? 15 : 17} /> },
-            { id: 'profile', label: isMobile ? 'Dados' : 'Meus Dados', icon: <User size={isMobile ? 15 : 17} /> },
-            { id: 'addresses', label: isMobile ? 'Endereços' : 'Endereços', icon: <MapPin size={isMobile ? 15 : 17} /> },
-            { id: 'payments', label: isMobile ? 'Cartões' : 'Cartões & Carteira', icon: <CreditCard size={isMobile ? 15 : 17} /> },
-            { id: 'prescriptions', label: isMobile ? 'Receitas' : 'Receitas Médicas', icon: <FileText size={isMobile ? 15 : 17} /> },
-            { id: 'alerts', label: isMobile ? 'Alertas' : 'Alertas de Remédios', icon: <Bell size={isMobile ? 15 : 17} /> }
+            { id: 'orders', label: 'Histórico de Compras', icon: <Package size={17} /> },
+            { id: 'profile', label: 'Meus Dados', icon: <User size={17} /> },
+            { id: 'addresses', label: 'Endereços Salvos', icon: <MapPin size={17} /> },
+            { id: 'payments', label: 'Cartões & Carteira', icon: <CreditCard size={17} /> },
+            { id: 'prescriptions', label: 'Receitas Médicas', icon: <FileText size={17} /> }
           ].map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -417,34 +569,53 @@ export function UserProfilePage({
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
-                  gap: isMobile ? '0.35rem' : '0.5rem',
-                  padding: isMobile ? '0.5rem 0.8rem' : '0.7rem 1.15rem',
-                  borderRadius: isMobile ? '10px' : '12px',
+                  justifyContent: 'center',
+                  gap: '0.55rem',
+                  padding: '0.85rem 1rem',
+                  borderRadius: '13px',
                   border: isActive ? 'none' : '1px solid #F1F5F9',
-                  backgroundColor: isActive ? '#001FD8' : '#F8FAFC',
+                  background: isActive ? 'linear-gradient(135deg, #001FD8 0%, #0017A3 100%)' : '#F8FAFC',
                   color: isActive ? '#FFFFFF' : '#475569',
-                  fontWeight: isActive ? 800 : 600,
-                  fontSize: isMobile ? '0.78rem' : '0.86rem',
+                  fontWeight: isActive ? 800 : 700,
+                  fontSize: '0.88rem',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                  boxShadow: isActive ? '0 4px 12px rgba(0, 31, 216, 0.22)' : 'none',
-                  transition: 'all 0.15s ease'
+                  boxShadow: isActive ? '0 6px 18px rgba(0, 31, 216, 0.28)' : 'none',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = '#EFF6FF';
+                    e.currentTarget.style.color = '#001FD8';
+                    e.currentTarget.style.borderColor = '#BFDBFE';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = '#F8FAFC';
+                    e.currentTarget.style.color = '#475569';
+                    e.currentTarget.style.borderColor = '#F1F5F9';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }
                 }}
               >
-                {tab.icon}
+                <span style={{ display: 'flex', alignItems: 'center', color: isActive ? '#FFFFFF' : '#001FD8' }}>
+                  {tab.icon}
+                </span>
                 <span>{tab.label}</span>
                 {tab.id === 'orders' && (
                   <span style={{
                     backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : '#EFF6FF',
                     color: isActive ? '#FFFFFF' : '#001FD8',
-                    fontSize: isMobile ? '0.68rem' : '0.72rem',
+                    fontSize: '0.74rem',
                     fontWeight: 900,
-                    padding: '0.08rem 0.42rem',
+                    padding: '0.12rem 0.5rem',
                     borderRadius: '999px',
-                    marginLeft: '0.15rem'
+                    marginLeft: '0.2rem',
+                    border: isActive ? '1px solid rgba(255,255,255,0.4)' : '1px solid #BFDBFE'
                   }}>
                     {ordersHistory.length}
                   </span>
@@ -1132,79 +1303,7 @@ export function UserProfilePage({
           </div>
         )}
 
-        {/* ====================================================================
-            CONTEÚDO DA ABA 6: ALERTAS DE MEDICAMENTOS
-            ==================================================================== */}
-        {activeTab === 'alerts' && (
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: isMobile ? '16px' : '20px', padding: isMobile ? '1.25rem 1rem' : '2rem', border: '1px solid #E2E8F0' }}>
-            <div style={{
-              display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-              justifyContent: 'space-between',
-              alignItems: isMobile ? 'stretch' : 'center',
-              gap: isMobile ? '0.75rem' : '1.5rem',
-              marginBottom: '1.25rem'
-            }}>
-              <div>
-                <h2 style={{ fontSize: isMobile ? '1.15rem' : '1.35rem', fontWeight: 900, color: '#0F172A', margin: 0 }}>
-                  Lembretes e Alertas de Horários
-                </h2>
-                <p style={{ fontSize: isMobile ? '0.78rem' : '0.85rem', color: '#64748B', marginTop: '0.2rem' }}>
-                  A FarmaViva envia notificações no WhatsApp e aplicativo para você nunca esquecer seus remédios.
-                </p>
-              </div>
-              <button
-                onClick={() => onShowToast && onShowToast('⏰ Novo alarme configurado para as 08:00h!')}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.45rem',
-                  backgroundColor: '#001FD8',
-                  color: '#FFFFFF',
-                  padding: '0.65rem 1.15rem',
-                  borderRadius: '12px',
-                  fontWeight: 800,
-                  fontSize: '0.84rem',
-                  cursor: 'pointer',
-                  border: 'none',
-                  flexShrink: 0
-                }}
-              >
-                <Plus size={16} />
-                <span>Novo Alarme</span>
-              </button>
-            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: isMobile ? '0.85rem' : '1rem', border: '1px solid #E2E8F0', borderRadius: '14px', backgroundColor: '#F8FAFC' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <Clock size={18} color="#001FD8" />
-                  <div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A' }}>Losartana Potássica 50mg — 1 Comprimido</div>
-                    <div style={{ fontSize: '0.74rem', color: '#64748B' }}>Todos os dias às 08:00 (Manhã em jejum)</div>
-                  </div>
-                </div>
-                <span style={{ backgroundColor: '#EFF6FF', color: '#001FD8', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.55rem', borderRadius: '999px', flexShrink: 0 }}>
-                  Ativo
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: isMobile ? '0.85rem' : '1rem', border: '1px solid #E2E8F0', borderRadius: '14px', backgroundColor: '#F8FAFC' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <Clock size={18} color="#001FD8" />
-                  <div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A' }}>Vitamina C 1g + Zinco — 1 Efervescente</div>
-                    <div style={{ fontSize: '0.74rem', color: '#64748B' }}>Após o almoço às 13:00</div>
-                  </div>
-                </div>
-                <span style={{ backgroundColor: '#EFF6FF', color: '#001FD8', fontSize: '0.7rem', fontWeight: 800, padding: '0.2rem 0.55rem', borderRadius: '999px', flexShrink: 0 }}>
-                  Ativo
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
 
       </div>
 

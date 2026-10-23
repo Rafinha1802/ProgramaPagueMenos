@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Sparkles,
   ShieldCheck,
@@ -43,16 +43,43 @@ export function DesktopAiResponsePage({
   const [customInput, setCustomInput] = useState('');
   const [chatAttachment, setChatAttachment] = useState(null);
   const chatFileInputRef = useRef(null);
+  const chatScrollRef = useRef(null);
+
+  const activeRecommendation = recommendation || {
+    journeyTitle: 'Consulta Farmacêutica Digital',
+    rationale: 'Selecionei opções com procedência garantida e descontos do Clube Pague Menos.',
+    botResponseText: 'Olá! Sou a Dra. Sofia, Farmacêutica IA da Pague Menos. Como posso te orientar hoje?',
+    totalPrice: 0,
+    originalTotal: 0,
+    savingsTotal: 0,
+    recommendedItems: [],
+    safetyNotice: {
+      hasPrescriptionRequired: false,
+      warningText: 'Todos os medicamentos incluídos são Isentos de Prescrição (MIPs).'
+    },
+    appliedPrompt: 'Atendimento Farmacêutico Digital',
+    targetBudget: null,
+    preferGenerics: false
+  };
+
+  const [conversation, setConversation] = useState(() => [
+    {
+      id: 'init-bot',
+      sender: 'bot',
+      time: 'Agora',
+      text: activeRecommendation?.botResponseText || activeRecommendation?.rationale || 'Olá! Sou a Dra. Sofia, Farmacêutica IA. Analisei sua necessidade e estruturei a melhor recomendação para sua saúde e economia. Você pode me fazer perguntas, pedir genéricos ou ajustar valores.'
+    }
+  ]);
 
   // Estados de Validação de Receita Médica (ANVISA / CFM)
-  const isPreValidated = Boolean(recommendation?.attachedAnalysis?.intent === 'prescription' || recommendation?.safetyNotice?.prescriptionPreValidated);
-  const initialPrescriptionData = recommendation?.attachedAnalysis?.prescriptionData || (isPreValidated ? {
-    doctor: recommendation?.attachedAnalysis?.doctor || 'Dr. Marcelo Santos - CRM/SP 142.891',
+  const isPreValidated = Boolean(activeRecommendation?.attachedAnalysis?.intent === 'prescription' || activeRecommendation?.safetyNotice?.prescriptionPreValidated);
+  const initialPrescriptionData = activeRecommendation?.attachedAnalysis?.prescriptionData || (isPreValidated ? {
+    doctor: activeRecommendation?.attachedAnalysis?.doctor || 'Dr. Marcelo Santos - CRM/SP 142.891',
     specialty: 'Clínica Médica & Farmacologia Clínica',
     status: 'Receita Digital Homologada (ICP-Brasil / CFM)',
     date: 'Hoje às ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     prescriptionCode: 'MEMED-8849-SP',
-    fileName: recommendation?.attachedAnalysis?.name || 'prescricao_medica.pdf'
+    fileName: activeRecommendation?.attachedAnalysis?.name || 'prescricao_medica.pdf'
   } : null);
 
   const [prescriptionValidated, setPrescriptionValidated] = useState(isPreValidated);
@@ -60,8 +87,6 @@ export function DesktopAiResponsePage({
   const [isValidatingPrescription, setIsValidatingPrescription] = useState(false);
   const [prescriptionCodeInput, setPrescriptionCodeInput] = useState('');
   const fileInputRef = useRef(null);
-
-  if (!recommendation) return null;
 
   const {
     journeyTitle,
@@ -75,7 +100,42 @@ export function DesktopAiResponsePage({
     targetBudget,
     preferGenerics,
     attachedAnalysis
-  } = recommendation;
+  } = activeRecommendation;
+
+  const [selectedBasketIds, setSelectedBasketIds] = useState(() => (recommendedItems || []).map((i) => i.id));
+
+  // Sincroniza a seleção quando a lista de recomendação for atualizada
+  useEffect(() => {
+    if (recommendedItems && recommendedItems.length > 0) {
+      setSelectedBasketIds((prev) => {
+        const validIds = recommendedItems.map((i) => i.id);
+        const filtered = prev.filter((id) => validIds.includes(id));
+        return filtered.length > 0 ? filtered : validIds;
+      });
+    } else {
+      setSelectedBasketIds([]);
+    }
+  }, [recommendedItems]);
+
+  const selectedBasketItems = (recommendedItems || []).filter((i) => selectedBasketIds.includes(i.id));
+  const selectedBasketTotal = selectedBasketItems.reduce((acc, curr) => acc + (curr.clubPrice || curr.price || 0), 0);
+  const selectedBasketOriginal = selectedBasketItems.reduce((acc, curr) => acc + (curr.originalPrice || curr.price || 0), 0);
+  const selectedBasketSavings = selectedBasketItems.reduce((acc, curr) => acc + Math.max(0, (curr.originalPrice || curr.price) - (curr.clubPrice || curr.price)), 0);
+  const allBasketSelected = recommendedItems.length > 0 && selectedBasketIds.length === recommendedItems.length;
+
+  const toggleSelectAllBasket = () => {
+    if (allBasketSelected) {
+      setSelectedBasketIds([]);
+    } else {
+      setSelectedBasketIds(recommendedItems.map((i) => i.id));
+    }
+  };
+
+  const toggleSelectItem = (id) => {
+    setSelectedBasketIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
 
   const hasPrescriptionItems = safetyNotice?.hasPrescriptionRequired || recommendedItems.some(i => i.requiresPrescription || i.isControlled);
   const isBasketLocked = hasPrescriptionItems && !prescriptionValidated;
@@ -169,11 +229,34 @@ export function DesktopAiResponsePage({
     e.preventDefault();
     if (customInput.trim() || chatAttachment) {
       const text = customInput.trim() || (chatAttachment?.intent === 'generic' ? `Ver genérico do medicamento ${chatAttachment.name}` : `Análise de documento ${chatAttachment?.name}`);
+      const userMsg = {
+        id: 'user-' + Date.now(),
+        sender: 'user',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text,
+        attachment: chatAttachment
+      };
+      setConversation((prev) => [...prev, userMsg]);
+
       onUpdateEngine({
         prompt: text,
         customSelectedIds: null,
         attachment: chatAttachment || null
       });
+
+      setTimeout(() => {
+        setConversation((prev) => [
+          ...prev,
+          {
+            id: 'bot-' + Date.now(),
+            sender: 'bot',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            text: `Ajustei a recomendação para "${text}". Atualizei os produtos recomendados na cesta ao lado com os melhores descontos do Clube!`
+          }
+        ]);
+        chatScrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 400);
+
       showChatFeedback(`Ajuste aplicado: "${text}"`);
       setCustomInput('');
       setChatAttachment(null);
@@ -182,11 +265,33 @@ export function DesktopAiResponsePage({
 
   // Envio por atalhos rápidos
   const handleQuickPrompt = (promptText) => {
+    const userMsg = {
+      id: 'user-' + Date.now(),
+      sender: 'user',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text: promptText
+    };
+    setConversation((prev) => [...prev, userMsg]);
+
     onUpdateEngine({ prompt: promptText, customSelectedIds: null });
+
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          id: 'bot-' + Date.now(),
+          sender: 'bot',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: `Ajustei a recomendação para "${promptText}". Verifique os itens atualizados na sua cesta!`
+        }
+      ]);
+      chatScrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 400);
+
     showChatFeedback(`Ajuste aplicado: "${promptText}"`);
   };
 
-  // Comprar todo o kit
+  // Comprar itens selecionados da cesta
   const handleAddAll = () => {
     if (isBasketLocked) {
       showChatFeedback('Atenção: Anexe e valide sua receita médica para liberar a compra desta medicação.');
@@ -194,7 +299,12 @@ export function DesktopAiResponsePage({
       if (el) el.scrollIntoView({ behavior: 'smooth' });
       return;
     }
-    onAddBatchToCart(recommendedItems, true);
+    const toBuy = recommendedItems.filter((i) => selectedBasketIds.includes(i.id));
+    if (toBuy.length === 0) {
+      showChatFeedback('Selecione ao menos 1 produto para adicionar ao carrinho.');
+      return;
+    }
+    onAddBatchToCart(toBuy, true);
   };
 
   // Comprar individual
@@ -812,6 +922,49 @@ export function DesktopAiResponsePage({
                 ))}
               </div>
 
+              {/* Feed Conversacional com a Farmacêutica IA */}
+              <div style={{
+                maxHeight: '260px',
+                overflowY: 'auto',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '12px',
+                padding: '0.85rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.65rem',
+                marginBottom: '0.85rem'
+              }}>
+                {conversation.map((msg) => (
+                  <div
+                    key={msg.id}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start'
+                    }}
+                  >
+                    <div style={{ fontSize: '0.65rem', color: '#64748B', fontWeight: 600, marginBottom: '0.15rem' }}>
+                      {msg.sender === 'user' ? 'Você' : 'Dra. Sofia (Farmacêutica IA)'} • {msg.time}
+                    </div>
+                    <div style={{
+                      backgroundColor: msg.sender === 'user' ? '#001FD8' : '#FFFFFF',
+                      color: msg.sender === 'user' ? '#FFFFFF' : '#0F172A',
+                      padding: '0.55rem 0.85rem',
+                      borderRadius: msg.sender === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                      fontSize: '0.82rem',
+                      lineHeight: 1.4,
+                      maxWidth: '85%',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                      border: msg.sender === 'user' ? 'none' : '1px solid #E2E8F0'
+                    }}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                <div ref={chatScrollRef} />
+              </div>
+
               {/* Input oculto para anexo no chat */}
               <input
                 ref={chatFileInputRef}
@@ -1006,7 +1159,7 @@ export function DesktopAiResponsePage({
                 </span>
               </div>
 
-              {/* Preços */}
+              {/* Preços e Resumo de Seleção */}
               <div style={{
                 backgroundColor: '#F8FAFC',
                 borderRadius: '16px',
@@ -1016,35 +1169,40 @@ export function DesktopAiResponsePage({
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
                   <div>
-                    <span style={{ fontSize: '0.85rem', color: '#94A3B8', textDecoration: 'line-through', marginRight: '0.65rem' }}>
-                      De R$ {originalTotal.toFixed(2).replace('.', ',')}
-                    </span>
+                    {selectedBasketOriginal > selectedBasketTotal && (
+                      <span style={{ fontSize: '0.85rem', color: '#94A3B8', textDecoration: 'line-through', marginRight: '0.65rem' }}>
+                        De R$ {selectedBasketOriginal.toFixed(2).replace('.', ',')}
+                      </span>
+                    )}
                     <span style={{ fontSize: '1.85rem', fontWeight: 900, color: '#E30613', letterSpacing: '-0.5px' }}>
-                      R$ {totalPrice.toFixed(2).replace('.', ',')}
+                      R$ {selectedBasketTotal.toFixed(2).replace('.', ',')}
                     </span>
                   </div>
-                  <span style={{
-                    backgroundColor: '#DCFCE7',
-                    color: '#008744',
-                    fontSize: '0.8rem',
-                    fontWeight: 800,
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '8px'
-                  }}>
-                    Economia: R$ {savingsTotal.toFixed(2).replace('.', ',')}
-                  </span>
+                  {selectedBasketSavings > 0 && (
+                    <span style={{
+                      backgroundColor: '#DCFCE7',
+                      color: '#008744',
+                      fontSize: '0.8rem',
+                      fontWeight: 800,
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: '8px'
+                    }}>
+                      Economia: R$ {selectedBasketSavings.toFixed(2).replace('.', ',')}
+                    </span>
+                  )}
                 </div>
                 <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                  ★ Preço exclusivo Clube FarmaViva • Pronta-entrega em até 1h
+                  ★ Preço exclusivo Clube FarmaViva ({selectedBasketItems.length} de {recommendedItems.length} selecionados)
                 </div>
               </div>
 
-              {/* Botão de Compra em Lote de Todo o Kit (Com Trava de Receita Médica) */}
+              {/* Botão de Compra em Lote dos Selecionados (Com Trava de Receita Médica) */}
               <button
                 onClick={handleAddAll}
+                disabled={!isBasketLocked && selectedBasketItems.length === 0}
                 style={{
                   width: '100%',
-                  backgroundColor: isBasketLocked ? '#64748B' : '#E30613',
+                  backgroundColor: isBasketLocked ? '#64748B' : (selectedBasketItems.length === 0 ? '#94A3B8' : '#E30613'),
                   color: '#FFFFFF',
                   padding: '0.95rem 1.5rem',
                   borderRadius: '14px',
@@ -1054,8 +1212,8 @@ export function DesktopAiResponsePage({
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.55rem',
-                  boxShadow: isBasketLocked ? 'none' : '0 6px 18px rgba(227, 6, 19, 0.35)',
-                  cursor: 'pointer',
+                  boxShadow: isBasketLocked || selectedBasketItems.length === 0 ? 'none' : '0 6px 18px rgba(227, 6, 19, 0.35)',
+                  cursor: selectedBasketItems.length === 0 && !isBasketLocked ? 'not-allowed' : 'pointer',
                   border: 'none',
                   transition: 'all 0.2s ease'
                 }}
@@ -1065,42 +1223,100 @@ export function DesktopAiResponsePage({
                     <Lock size={20} />
                     <span>🔒 Cesta bloqueada: Anexe a receita médica para comprar</span>
                   </>
+                ) : selectedBasketItems.length === 0 ? (
+                  <>
+                    <ShoppingBag size={20} />
+                    <span>Selecione ao menos 1 item para comprar</span>
+                  </>
                 ) : (
                   <>
                     <ShoppingBag size={20} />
                     <span>
                       {prescriptionValidated
-                        ? `Comprar cesta completa com receita validada (${recommendedItems.length} itens)`
-                        : `Comprar cesta completa (${recommendedItems.length} itens) e abrir carrinho`}
+                        ? `Comprar selecionados com receita validada (${selectedBasketItems.length} itens)`
+                        : `Comprar selecionados (${selectedBasketItems.length} itens) e abrir carrinho`}
                     </span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* Lista dos Produtos Selecionados no Kit */}
+            {/* Lista dos Produtos Selecionados no Kit com Seleção Individual */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A' }}>
-                Itens incluídos nesta cesta:
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                backgroundColor: '#FFFFFF',
+                padding: '0.65rem 0.9rem',
+                borderRadius: '12px',
+                border: '1px solid #E2E8F0',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+              }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', fontSize: '0.86rem', fontWeight: 700, color: '#0F172A' }}>
+                  <input
+                    type="checkbox"
+                    checked={allBasketSelected}
+                    onChange={toggleSelectAllBasket}
+                    style={{ width: '18px', height: '18px', accentColor: '#E30613', cursor: 'pointer' }}
+                  />
+                  <span>Selecionar todos ({selectedBasketIds.length}/{recommendedItems.length})</span>
+                </label>
+                <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#008744' }}>
+                  Subtotal: R$ {selectedBasketTotal.toFixed(2).replace('.', ',')}
+                </span>
               </div>
 
               {recommendedItems.map((prod) => {
                 const hasAlternative = prod.genericEquivalentId || CATALOG.some((c) => c.category === prod.category && c.id !== prod.id);
+                const isSelected = selectedBasketIds.includes(prod.id);
 
                 return (
                   <div
                     key={prod.id}
                     style={{
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: isSelected ? '#FFFFFF' : '#F8FAFC',
                       borderRadius: '16px',
-                      border: '1px solid #E2E8F0',
+                      border: isSelected ? '1.5px solid #001FD8' : '1px solid #E2E8F0',
                       padding: '1rem',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '0.75rem',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.03)'
+                      boxShadow: isSelected ? '0 4px 12px rgba(0,31,216,0.06)' : 'none',
+                      transition: 'all 0.2s ease'
                     }}
                   >
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      paddingBottom: '0.5rem',
+                      borderBottom: '1px solid #F1F5F9'
+                    }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelectItem(prod.id)}
+                          style={{ width: '18px', height: '18px', accentColor: '#E30613', cursor: 'pointer' }}
+                        />
+                        <span style={{
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          color: isSelected ? '#008744' : '#64748B'
+                        }}>
+                          {isSelected ? '✓ Selecionado para comprar' : '○ Não selecionado'}
+                        </span>
+                      </label>
+                      <button
+                        onClick={() => handleRemoveProduct(prod.id)}
+                        style={{ color: '#94A3B8', padding: '0.2rem', cursor: 'pointer', background: 'none', border: 'none' }}
+                        title="Remover deste kit"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                       <img
                         src={prod.image}

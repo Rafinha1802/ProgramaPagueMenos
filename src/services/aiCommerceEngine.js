@@ -2,7 +2,7 @@
 // Converte linguagem natural e intenções de compra em seleções estruturadas do catálogo,
 // aplicando regras clínicas de segurança, restrição orçamentária e otimização por genéricos.
 
-import { CATALOG } from '../data/catalog';
+import { CATALOG } from '../data/catalog.js';
 
 export function runAiCommerceEngine({
   prompt = '',
@@ -19,6 +19,8 @@ export function runAiCommerceEngine({
   let theme = 'geral';
   let extractedBudget = budget ? parseFloat(budget) : null;
   let attachedAnalysis = null;
+  let effectivePreferGenerics = preferGenerics;
+  let baseProductIds = [];
 
   // Processamento de Anexo (Imagem de Remédio, Foto Tirada no App, Documento/Receita)
   if (attachment) {
@@ -183,7 +185,6 @@ export function runAiCommerceEngine({
   }
 
   // Detectar preferências no chat (genéricos, mais barato, economia)
-  let effectivePreferGenerics = preferGenerics;
   if (
     normalized.includes('genérico') ||
     normalized.includes('generico') ||
@@ -200,9 +201,6 @@ export function runAiCommerceEngine({
   ) {
     effectivePreferGenerics = false;
   }
-
-  // Se já tiver uma lista customizada de IDs (por exemplo, após ajustes do usuário)
-  if (!baseProductIds) baseProductIds = [];
 
   // Verificação de medicamentos controlados ou restritos por receita (ANVISA)
   const isControlledQuery =
@@ -234,6 +232,8 @@ export function runAiCommerceEngine({
 
   if (customSelectedIds && customSelectedIds.length > 0) {
     baseProductIds = [...customSelectedIds];
+  } else if (baseProductIds.length > 0) {
+    // Mantém produtos já selecionados pelo anexo (Dorflex, Rivotril, Neosaldina, Receita, etc.)
   } else if (isControlledQuery) {
     theme = 'controlled_rx';
     if (normalized.includes('clonazepam') || normalized.includes('rivotril') || normalized.includes('calmante') || normalized.includes('ansiolit')) {
@@ -445,10 +445,43 @@ export function runAiCommerceEngine({
     }
   ];
 
+  // 8. Mensagem Conversacional Farmacêutica Direta para o Chatbot
+  let botResponseText = '';
+  const isGreeting = !normalized || /^(ol[aá]|oi|bom dia|boa tarde|boa noite|opa|e a[ií]|ajuda|farmac[eê]utica|dra|iniciar|come[cç]ar)/i.test(normalized);
+
+  if (isGreeting && !attachment && !presetId) {
+    botResponseText = 'Olá! Sou a Dra. Sofia, Farmacêutica IA da Pague Menos. 👩‍⚕️💊 Como posso te ajudar hoje? Posso te orientar sobre remédios para dor, febre e gripe, encontrar genéricos bioequivalentes da ANVISA com alta economia, sugerir dermocosméticos ou validar sua receita médica.';
+  } else if (attachedAnalysis) {
+    if (attachedAnalysis.intent === 'generic') {
+      botResponseText = `Analisei a foto do seu medicamento (${attachedAnalysis.detectedMedication}). Identifiquei o Genérico Equivalente aprovado pela ANVISA: ${attachedAnalysis.equivalentGeneric}. Mesma molécula e segurança clínica com economia de ${attachedAnalysis.savingsPercent}%!`;
+    } else if (attachedAnalysis.intent === 'prescription') {
+      botResponseText = `Receita médica do ${attachedAnalysis.doctor} validada com sucesso! Protocolo ICP-Brasil/CFM homologado e compra de medicamentos liberada com segurança.`;
+    } else {
+      botResponseText = `Analisei o anexo enviado (${attachedAnalysis.name}) e selecionei os itens correspondentes com procedência garantida.`;
+    }
+  } else if (theme === 'controlled_rx') {
+    botResponseText = `Atenção: Os medicamentos pesquisados são de controle especial pela ANVISA (Portaria SVS/MS 344/98). Por exigência legal sanitária, a dispensação só é liberada mediante retenção de receita médica válida. Você pode anexar sua receita física ou PDF digital para validação imediata.`;
+  } else if (effectivePreferGenerics && savingsTotal > 0) {
+    botResponseText = `Pronto! Priorizei versões genéricas aprovadas pela ANVISA (mesmo princípio ativo e dosagem), gerando uma economia de R$ ${savingsTotal.toFixed(2).replace('.', ',')} na sua cesta!`;
+  } else if (extractedBudget) {
+    botResponseText = `Ajustei sua cesta para o teto de R$ ${extractedBudget.toFixed(2).replace('.', ',')}. O total final ficou em R$ ${currentTotal.toFixed(2).replace('.', ',')}, com ${recommendedItems.length} produto(s) essenciais selecionados.`;
+  } else if (theme === 'praia') {
+    botResponseText = `Preparei uma seleção para praia e verão: alta proteção solar com toque seco e hidratação contra os danos do sol e água do mar.`;
+  } else if (theme === 'skincare') {
+    botResponseText = `Reuni dermocosméticos ideais para cuidados com a pele: higienização profunda dos poros com ácido salicílico e proteção solar de rápida absorção.`;
+  } else if (theme === 'gripe') {
+    botResponseText = `Montei uma cesta completa para alívio rápido de sintomas gripais (febre, dor no corpo e congestão nasal) somados a suporte vitamínico.`;
+  } else if (theme === 'recompra') {
+    botResponseText = `Encontrei seus medicamentos habituais para alívio rápido de dor e febre, com descontos exclusivos do Clube!`;
+  } else {
+    botResponseText = `Com base no que você pediu, selecionei ${recommendedItems.length} produto(s) recomendados com supervisão farmacêutica. Você pode adicionar à sacola ou me pedir alterações (como genéricos mais baratos ou limite de orçamento).`;
+  }
+
   return {
     theme,
     journeyTitle,
     rationale,
+    botResponseText,
     appliedPrompt: prompt,
     preferGenerics: effectivePreferGenerics,
     targetBudget: extractedBudget,

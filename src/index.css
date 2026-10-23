@@ -56,7 +56,7 @@
 
 body {
   font-family: var(--font-main);
-  background-color: #E2E8F0;
+  background-color: #FFFFFF;
   color: var(--pm-app-text);
   -webkit-font-smoothing: antialiased;
 }

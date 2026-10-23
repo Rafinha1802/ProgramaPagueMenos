@@ -716,13 +716,13 @@ export function DesktopHomePage({
       </section>
 
       {/* ====================================================================
-          1.1 NOTIFICAÇÕES & AÇÕES RÁPIDAS (EXATO CONFORME SOLICITADO NO PRINT)
+          1.1 NOTIFICAÇÕES & AÇÕES RÁPIDAS
           ==================================================================== */}
       <section style={{ padding: '1.25rem 0 0.5rem 0', backgroundColor: '#F8FAFC' }}>
         <div className="container">
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: 'repeat(3, 1fr)',
             gap: '1.15rem'
           }}>
             {/* Card 1: Busque produtos usando sua receita (com badge Novo verde) */}
@@ -800,77 +800,6 @@ export function DesktopHomePage({
               </div>
             </div>
 
-            {/* Card 2: Configure alertas de medicamentos */}
-            <div
-              onClick={() => {
-                if (typeof onShowToast === 'function') {
-                  onShowToast('⏰ Lembrete de medicamentos ativado! Você receberá alertas nos horários configurados.');
-                }
-              }}
-              style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '18px',
-                padding: '1.25rem 1.35rem',
-                boxShadow: '0 4px 14px rgba(15, 23, 42, 0.05)',
-                border: '1px solid #E2E8F0',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                minHeight: '118px',
-                transition: 'all 0.25s ease',
-                position: 'relative'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 10px 22px rgba(0, 31, 216, 0.12)';
-                e.currentTarget.style.borderColor = '#93C5FD';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(15, 23, 42, 0.05)';
-                e.currentTarget.style.borderColor = '#E2E8F0';
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '12px',
-                  backgroundColor: '#EFF6FF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#001FD8'
-                }}>
-                  <Calendar size={22} strokeWidth={2.2} />
-                </div>
-                <span style={{
-                  backgroundColor: '#E0E7FF',
-                  color: '#3730A3',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  padding: '0.22rem 0.65rem',
-                  borderRadius: '999px',
-                  letterSpacing: '0.02em'
-                }}>
-                  Alertas
-                </span>
-              </div>
-              <div style={{ marginTop: '0.75rem' }}>
-                <div style={{
-                  fontSize: '0.98rem',
-                  fontWeight: 800,
-                  color: '#0F172A',
-                  lineHeight: 1.3
-                }}>
-                  Configure alertas de medicamentos
-                </div>
-                <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.2rem' }}>
-                  Nunca mais esqueça seus horários
-                </div>
-              </div>
-            </div>
 
             {/* Card 3: Economize trocando por genéricos */}
             <div
@@ -1014,7 +943,7 @@ export function DesktopHomePage({
       </section>
 
       {/* ====================================================================
-          1.2 BANNERS DE PROPAGANDA OFICIAIS FARMAVIVA (EXATOS COMO NO PRINT)
+          1.2 BANNERS DE PROPAGANDA OFICIAIS FARMAVIVA
           ==================================================================== */}
       <section style={{ padding: '1.25rem 0 1rem 0' }}>
         <div className="container">
@@ -1112,7 +1041,7 @@ export function DesktopHomePage({
           }}>
             {activeBannerSlide === 0 ? (
               <>
-                {/* Banner 1: ALIMENTO INFANTIL COM ATÉ 60% OFF NA 2ª UNIDADE (EXATO PRINT) */}
+                {/* Banner 1: ALIMENTO INFANTIL COM ATÉ 60% OFF NA 2ª UNIDADE */}
                 <div
                   onClick={() => onOpenAiWithPrompt('Quero ofertas de fórmulas infantis como Aptanutri e Nestonutri.')}
                   style={{
@@ -1329,7 +1258,7 @@ export function DesktopHomePage({
                   </div>
                 </div>
 
-                {/* Banner 2: FESTIVAL DERMO & BELEZA (EXATO PRINT) */}
+                {/* Banner 2: FESTIVAL DERMO & BELEZA */}
                 <div
                   onClick={() => onOpenAiWithPrompt('Quero ver ofertas de dermocosméticos e protetor solar do Festival Dermo.')}
                   style={{
@@ -1678,7 +1607,7 @@ export function DesktopHomePage({
       </section>
 
       {/* ====================================================================
-          2. CARROSSEL DE CARDS PROMOCIONAIS COM DEGRADÊ (EXATO COMO PRINT 1)
+          2. CARROSSEL DE CARDS PROMOCIONAIS COM DEGRADÊ
           ==================================================================== */}
       <section style={{ padding: '2rem 0 1.25rem 0' }}>
         <div className="container">
@@ -2181,92 +2110,6 @@ export function DesktopHomePage({
 
         </div>
       </section>
-
-      {/* ====================================================================
-          7. CHATBOT FLUTUANTE DINÂMICO (BOTTOM-RIGHT FAB)
-          ==================================================================== */}
-      <div style={{
-        position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        zIndex: 900,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '0.65rem'
-      }}>
-        {/* Balão de Fala Dinâmico Interativo */}
-        {isFabBubbleOpen && (
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            border: '1.5px solid #001FD8',
-            borderRadius: '16px 16px 4px 16px',
-            padding: '0.75rem 1rem',
-            boxShadow: '0 8px 24px rgba(0, 31, 216, 0.2)',
-            maxWidth: '280px',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '0.5rem',
-            animation: 'fadeIn 0.2s ease-out'
-          }}>
-            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => onOpenAiWithPrompt('Preciso de ajuda farmacêutica')}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.7rem', fontWeight: 800, color: '#001FD8', marginBottom: '0.2rem' }}>
-                <Sparkles size={11} color="#001FD8" />
-                <span>Dra. IA Pague Menos</span>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#1E293B', fontWeight: 600, lineHeight: 1.35, margin: 0 }}>
-                "{bubbleMessages[currentBubbleTextIndex]}"
-              </p>
-              <span style={{ fontSize: '0.7rem', color: '#001FD8', fontWeight: 800, marginTop: '0.35rem', display: 'inline-block' }}>
-                Clique para conversar →
-              </span>
-            </div>
-            <button
-              onClick={() => setIsFabBubbleOpen(false)}
-              style={{ color: '#94A3B8', padding: '0.1rem', cursor: 'pointer', border: 'none', background: 'transparent' }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-        )}
-
-        {/* Botão Redondo Flutuante da Farmacêutica IA */}
-        <button
-          onClick={() => onOpenAiWithPrompt('Preciso de atendimento e recomendações de farmácia')}
-          style={{
-            width: '60px',
-            height: '60px',
-            borderRadius: '50%',
-            backgroundColor: '#001FD8',
-            color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 6px 20px rgba(0, 31, 216, 0.45)',
-            border: '3px solid #FFFFFF',
-            cursor: 'pointer',
-            position: 'relative',
-            transition: 'transform 0.15s ease'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          title="Abrir Farmacêutica IA Pague Menos"
-        >
-          <Sparkles size={26} color="#FDE047" />
-
-          {/* Ponto Verde Pulsante de Status Online */}
-          <span style={{
-            position: 'absolute',
-            top: '2px',
-            right: '2px',
-            width: '14px',
-            height: '14px',
-            borderRadius: '50%',
-            backgroundColor: '#10B981',
-            border: '2px solid #FFFFFF'
-          }} />
-        </button>
-      </div>
 
     </div>
   );
