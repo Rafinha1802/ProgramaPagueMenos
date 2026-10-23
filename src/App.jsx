@@ -223,7 +223,7 @@ export function App() {
       backgroundColor: desktopPage === 'auth' ? '#F8FAFC' : '#FFFFFF',
       position: 'relative'
     }}>
-      {/* SE ESTIVER NA TELA DE LOGIN / CADASTRO: TELA CHEIA IMERSIVA (100vw x 100vh) */}
+      {/* TELA DE LOGIN / CADASTRO: TELA CHEIA IMERSIVA (100vw x 100vh) */}
       {desktopPage === 'auth' ? (
         <DesktopAuthPage
           initialMode={desktopAuthMode}
@@ -240,17 +240,22 @@ export function App() {
           <DesktopHeader
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            onPerformSearch={() => { }}
+            onPerformSearch={(query) => {
+              const q = (typeof query === 'string' && query.trim()) ? query.trim() : searchQuery.trim();
+              if (q) {
+                handleSelectCustomPrompt(q);
+              }
+            }}
             cartItemsCount={cartItemsCount}
             cartTotal={cartTotal}
             onOpenCart={() => setIsCartOpen(true)}
-            onOpenAiGuide={() => {
-              if (!aiRecommendation) {
-                handleSelectCustomPrompt('Produtos de primeiros socorros e alívio de dor para viagem');
-              } else {
-                setDesktopPage('ai-response');
-              }
+            onOpenAiGuide={(customPrompt) => {
+              const promptToUse = (typeof customPrompt === 'string' && customPrompt.trim())
+                ? customPrompt.trim()
+                : (searchQuery.trim() || 'Produtos de primeiros socorros e alívio de dor para viagem');
+              handleSelectCustomPrompt(promptToUse);
             }}
+            onOpenCamera={() => setIsCameraModalOpen(true)}
             activeCategory={activeCategory}
             setActiveCategory={setActiveCategory}
             onOpenSafetyModal={() => setIsSafetyModalOpen(true)}

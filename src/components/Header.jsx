@@ -1,5 +1,8 @@
-import React from 'react';
-import { Search, ShoppingBag, MapPin, Sparkles, User, Store, Smartphone, HelpCircle, ChevronRight, Mic } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { 
+  Search, ShoppingBag, MapPin, Sparkles, User, Store, Smartphone, 
+  HelpCircle, ChevronRight, Mic, Camera, X, ArrowRight, TrendingUp, Sparkle
+} from 'lucide-react';
 
 export function Header({
   searchQuery,
@@ -20,8 +23,78 @@ export function Header({
   onOpenAppModal,
   onOpenHelpModal,
   onOpenCepModal,
-  userLocationCep
+  userLocationCep,
+  onOpenCamera
 }) {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setIsSearchFocused(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const aiSmartPrompts = [
+    {
+      badge: 'Alívio Rápido',
+      query: 'Dor de cabeça forte e enxaqueca',
+      hint: 'Neosaldina, Dipirona e analgésicos rápidos'
+    },
+    {
+      badge: 'Economia',
+      query: 'Genérico mais barato com mesma fórmula',
+      hint: 'Economize até 65% em similares aprovados pela Anvisa'
+    },
+    {
+      badge: 'Dermo & Beleza',
+      query: 'Protetor solar toque seco para pele oleosa',
+      hint: 'Anthelios, Minesol, Episol e fotoproteção'
+    },
+    {
+      badge: 'Imunidade',
+      query: 'Kit gripe, febre e imunidade com Vitamina C',
+      hint: 'Cimegripe, Benegrip, Redoxon e Zinco'
+    }
+  ];
+
+  const popularTags = [
+    'Dipirona 500mg',
+    'Dorflex',
+    'Neosaldina',
+    'Protetor FPS 60',
+    'Vitamina C',
+    'Dramin',
+    'Torsilax',
+    'Bepantol'
+  ];
+
+  const handleSelectQuery = (text) => {
+    setSearchQuery(text);
+    setIsSearchFocused(false);
+    if (onOpenAiGuide) {
+      onOpenAiGuide(text);
+    } else if (onPerformSearch) {
+      onPerformSearch(text);
+    }
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    setIsSearchFocused(false);
+    if (searchQuery && searchQuery.trim()) {
+      if (onOpenAiGuide) {
+        onOpenAiGuide(searchQuery.trim());
+      } else if (onPerformSearch) {
+        onPerformSearch(searchQuery.trim());
+      }
+    }
+  };
   const departments = [
     { id: 'ofertas', label: 'Ofertas', isRed: true },
     { id: 'Medicamentos', label: 'Medicamentos e Saúde' },
@@ -105,66 +178,419 @@ export function Header({
           </div>
 
           {/* Barra de Busca Dinâmica com IA Integrada */}
-          <div style={{ flex: 1, maxWidth: '620px', position: 'relative' }}>
+          <div ref={searchContainerRef} style={{ flex: 1, maxWidth: '740px', position: 'relative' }}>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (searchQuery.trim()) onPerformSearch();
-              }}
+              onSubmit={handleFormSubmit}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                backgroundColor: '#F1F5F9',
+                backgroundColor: isSearchFocused ? '#FFFFFF' : '#F8FAFC',
                 borderRadius: '999px',
-                padding: '0.25rem 0.5rem 0.25rem 1.15rem',
-                border: '1px solid #E2E8F0',
-                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.03)'
+                height: '50px',
+                padding: '0.25rem 0.35rem 0.25rem 1.15rem',
+                border: isSearchFocused ? '1.5px solid #001FD8' : '1.5px solid #E2E8F0',
+                boxShadow: isSearchFocused 
+                  ? '0 10px 25px -4px rgba(0, 31, 216, 0.16), 0 0 0 3px rgba(0, 31, 216, 0.1)' 
+                  : '0 2px 6px rgba(15, 23, 42, 0.04)',
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
             >
-              <Search size={18} color="#64748B" style={{ marginRight: '0.65rem', flexShrink: 0 }} />
+              {/* Ícone de Busca Dinâmico */}
+              <Search 
+                size={19} 
+                color={isSearchFocused ? '#001FD8' : '#64748B'} 
+                style={{ marginRight: '0.75rem', flexShrink: 0, transition: 'color 0.15s ease' }} 
+              />
+
+              {/* Input com placeholder refinado que não corta */}
               <input
                 type="text"
-                placeholder="O que você procura? (Remédios, sintomas ou rotina de cuidados...)"
+                placeholder="Buscar remédios, sintomas, genéricos..."
                 value={searchQuery}
+                onFocus={() => setIsSearchFocused(true)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   flex: 1,
                   border: 'none',
                   backgroundColor: 'transparent',
-                  fontSize: '0.88rem',
-                  color: '#1E293B',
+                  fontSize: '0.86rem',
+                  fontWeight: 500,
+                  color: '#0F172A',
                   outline: 'none',
-                  padding: '0.45rem 0'
+                  padding: '0.4rem 0',
+                  minWidth: 0
                 }}
               />
-              
-              {/* Botão de Busca Dinâmica com IA */}
+
+              {/* Botão Limpar (X) */}
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    border: 'none',
+                    backgroundColor: '#E2E8F0',
+                    width: '22px',
+                    height: '22px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#475569',
+                    cursor: 'pointer',
+                    marginRight: '0.45rem',
+                    flexShrink: 0,
+                    padding: 0,
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#CBD5E1'; e.currentTarget.style.color = '#0F172A'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#E2E8F0'; e.currentTarget.style.color = '#475569'; }}
+                  title="Limpar busca"
+                >
+                  <X size={13} />
+                </button>
+              )}
+
+              {/* Separador vertical sutil */}
+              <div style={{ width: '1px', height: '22px', backgroundColor: '#E2E8F0', margin: '0 0.5rem 0 0.2rem', flexShrink: 0 }} />
+
+              {/* Atalho de Enviar Receita com Câmera */}
+              {onOpenCamera && (
+                <button
+                  type="button"
+                  onClick={onOpenCamera}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '34px',
+                    height: '34px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    backgroundColor: '#F1F5F9',
+                    color: '#475569',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    flexShrink: 0,
+                    marginRight: '0.35rem'
+                  }}
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.backgroundColor = '#EFF6FF'; 
+                    e.currentTarget.style.color = '#001FD8'; 
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.backgroundColor = '#F1F5F9'; 
+                    e.currentTarget.style.color = '#475569'; 
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  title="Fotografar ou enviar receita médica para a IA montar sua cesta"
+                >
+                  <Camera size={16} />
+                </button>
+              )}
+
+              {/* Botão de Busca Hero com IA */}
               <button
                 type="button"
-                onClick={onOpenAiGuide}
+                onClick={() => {
+                  setIsSearchFocused(false);
+                  if (onOpenAiGuide) {
+                    onOpenAiGuide(searchQuery ? searchQuery.trim() : '');
+                  } else if (onPerformSearch) {
+                    onPerformSearch(searchQuery ? searchQuery.trim() : '');
+                  }
+                }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
-                  backgroundColor: '#001FD8',
+                  gap: '0.45rem',
+                  background: 'linear-gradient(135deg, #001FD8 0%, #001282 100%)',
                   color: '#FFFFFF',
-                  padding: '0.45rem 0.85rem',
+                  height: '40px',
+                  padding: '0 1.25rem',
                   borderRadius: '999px',
-                  fontSize: '0.75rem',
+                  fontSize: '0.84rem',
                   fontWeight: 800,
+                  letterSpacing: '-0.2px',
                   cursor: 'pointer',
                   border: 'none',
-                  boxShadow: '0 2px 6px rgba(0, 31, 216, 0.3)',
-                  transition: 'transform 0.15s ease',
-                  flexShrink: 0,
-                  marginLeft: '0.2rem'
+                  boxShadow: '0 3px 12px rgba(0, 31, 216, 0.35)',
+                  transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+                  flexShrink: 0
                 }}
-                title="Consultar Farmacêutica com IA"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 6px 18px rgba(0, 31, 216, 0.45)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 3px 12px rgba(0, 31, 216, 0.35)';
+                }}
+                title="Consultar Farmacêutica Inteligente FarmaViva"
               >
-                <Sparkles size={13} color="#FDE047" />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '6px',
+                  backgroundColor: 'rgba(255,255,255,0.18)'
+                }}>
+                  <Sparkles size={13} color="#FDE047" />
+                </div>
                 <span>Buscar com IA</span>
               </button>
             </form>
+
+            {/* Smart Floating Autocomplete Dropdown (quando focado) */}
+            {isSearchFocused && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  left: 0,
+                  right: 0,
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '18px',
+                  boxShadow: '0 20px 40px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 31, 216, 0.08)',
+                  padding: '1.15rem',
+                  zIndex: 999,
+                  animation: 'fadeIn 0.15s ease'
+                }}
+              >
+                {/* Header do Dropdown */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', paddingBottom: '0.65rem', borderBottom: '1px solid #F1F5F9' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <div style={{
+                      width: '22px',
+                      height: '22px',
+                      borderRadius: '6px',
+                      backgroundColor: '#EFF6FF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#001FD8'
+                    }}>
+                      <Sparkles size={13} />
+                    </div>
+                    <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#001FD8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Assistente Farmacêutica FarmaViva
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Pressione Enter para buscar</span>
+                </div>
+
+                {/* Se o usuário já digitou algo, destacar ação de busca imediata com IA */}
+                {searchQuery && searchQuery.trim().length > 0 && (
+                  <div
+                    onClick={() => handleSelectQuery(searchQuery.trim())}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      backgroundColor: '#EFF6FF',
+                      border: '1.5px solid #BFDBFE',
+                      borderRadius: '12px',
+                      padding: '0.75rem 1rem',
+                      marginBottom: '0.9rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#DBEAFE';
+                      e.currentTarget.style.borderColor = '#001FD8';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#EFF6FF';
+                      e.currentTarget.style.borderColor = '#BFDBFE';
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <div style={{
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '8px',
+                        backgroundColor: '#001FD8',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#FFFFFF'
+                      }}>
+                        <Sparkles size={16} color="#FDE047" />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0F172A' }}>
+                          Buscar com IA: <span style={{ color: '#001FD8' }}>"{searchQuery}"</span>
+                        </div>
+                        <div style={{ fontSize: '0.73rem', color: '#475569' }}>
+                          Analisar sintomas, medicamentos equivalentes e genéricos mais baratos
+                        </div>
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      color: '#001FD8',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem'
+                    }}>
+                      Consultar IA <ArrowRight size={14} />
+                    </span>
+                  </div>
+                )}
+
+                {/* Lista de Prompts Inteligentes Guiados */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '1rem' }}>
+                  {aiSmartPrompts.map((item, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handleSelectQuery(item.query)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.65rem 0.85rem',
+                        borderRadius: '12px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        backgroundColor: '#F8FAFC',
+                        border: '1px solid transparent'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#EFF6FF';
+                        e.currentTarget.style.borderColor = '#BFDBFE';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F8FAFC';
+                        e.currentTarget.style.borderColor = 'transparent';
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <span style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '6px',
+                          backgroundColor: '#E0E7FF',
+                          color: '#3730A3'
+                        }}>
+                          {item.badge}
+                        </span>
+                        <div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A' }}>
+                            {item.query}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                            {item.hint}
+                          </div>
+                        </div>
+                      </div>
+                      <ArrowRight size={15} color="#001FD8" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Termos Populares / Em Alta */}
+                <div style={{ marginBottom: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.74rem', fontWeight: 700, color: '#64748B', marginBottom: '0.5rem' }}>
+                    <TrendingUp size={13} color="#001FD8" />
+                    <span>MAIS BUSCADOS NA FARMÁCIA</span>
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                    {popularTags.map((tag, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelectQuery(tag)}
+                        style={{
+                          border: '1px solid #E2E8F0',
+                          backgroundColor: '#FFFFFF',
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '999px',
+                          fontSize: '0.76rem',
+                          fontWeight: 600,
+                          color: '#334155',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#001FD8';
+                          e.currentTarget.style.borderColor = '#001FD8';
+                          e.currentTarget.style.color = '#FFFFFF';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFFFFF';
+                          e.currentTarget.style.borderColor = '#E2E8F0';
+                          e.currentTarget.style.color = '#334155';
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card de Envio de Receita */}
+                {onOpenCamera && (
+                  <div
+                    onClick={() => {
+                      setIsSearchFocused(false);
+                      onOpenCamera();
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
+                      border: '1px dashed #93C5FD',
+                      borderRadius: '12px',
+                      padding: '0.75rem 1rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#001FD8'}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#93C5FD'}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        backgroundColor: '#DBEAFE',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#001FD8'
+                      }}>
+                        <Camera size={18} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}>
+                          Tem uma receita médica ou caixa em mãos?
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                          A IA lê o nome dos medicamentos e monta a cesta ideal com genéricos mais baratos.
+                        </div>
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: '#001FD8',
+                      backgroundColor: '#FFFFFF',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '8px',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
+                    }}>
+                      Enviar foto
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* 3 Ações à Direita: CEP, Login, Cesta */}
