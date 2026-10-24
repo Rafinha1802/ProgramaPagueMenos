@@ -378,7 +378,7 @@ export function DesktopAiResponsePage({
               boxShadow: '0 0 0 3px rgba(16, 185, 129, 0.2)'
             }} />
             <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A' }}>
-              Dra. IA FarmaViva • CRF/SP 48.219 (Plantão Ativo)
+              Dra. IA Pague Menos • CRF/SP 48.219 (Plantão Ativo)
             </span>
           </div>
         </div>
@@ -601,7 +601,7 @@ export function DesktopAiResponsePage({
                 </div>
                 <div>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.2 }}>
-                    Orientação Clínica FarmaViva
+                    Orientação Clínica Pague Menos
                   </h3>
                   <span style={{ fontSize: '0.75rem', color: '#008744', fontWeight: 700 }}>
                     ✓ Dosagem, indicações e segurança farmacêutica validadas
@@ -1140,7 +1140,7 @@ export function DesktopAiResponsePage({
                     marginBottom: '0.35rem'
                   }}>
                     <Sparkles size={12} />
-                    <span>Cesta Inteligente FarmaViva</span>
+                    <span>Cesta Inteligente Pague Menos</span>
                   </div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.3px' }}>
                     {journeyTitle}
@@ -1192,7 +1192,7 @@ export function DesktopAiResponsePage({
                   )}
                 </div>
                 <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                  ★ Preço exclusivo Clube FarmaViva ({selectedBasketItems.length} de {recommendedItems.length} selecionados)
+                  ★ Preço exclusivo Sempre Bem Pague Menos ({selectedBasketItems.length} de {recommendedItems.length} selecionados)
                 </div>
               </div>
 

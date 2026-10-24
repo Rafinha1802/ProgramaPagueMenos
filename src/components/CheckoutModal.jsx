@@ -79,7 +79,7 @@ export function CheckoutModal({ isOpen, onClose, cartItems, onCompleteOrder }) {
         }}>
           <div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>
-              {isSuccess ? 'Pedido Confirmado com Sucesso!' : 'Finalização de Compra • FarmaViva'}
+              {isSuccess ? 'Pedido Confirmado com Sucesso!' : 'Finalização de Compra • Pague Menos'}
             </h3>
             <div style={{ fontSize: '0.8rem', color: '#93C5FD' }}>
               {isSuccess ? 'Sua farmácia já está preparando os itens' : 'Fluxo seguro de entrega e conferência farmacêutica'}
@@ -129,7 +129,7 @@ export function CheckoutModal({ isOpen, onClose, cartItems, onCompleteOrder }) {
               Compra Finalizada com Sucesso!
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '480px', margin: '0 auto 1.5rem auto', lineHeight: 1.5 }}>
-              Sua cesta integrada (com itens da busca tradicional e sugestões inteligentes da IA) foi encaminhada para a loja <strong>FarmaViva Paulista</strong>.
+              Sua cesta integrada (com itens da busca tradicional e sugestões inteligentes da IA) foi encaminhada para a loja <strong>Pague Menos Paulista</strong>.
             </p>
 
             {/* Card de Previsão */}
@@ -195,7 +195,7 @@ export function CheckoutModal({ isOpen, onClose, cartItems, onCompleteOrder }) {
                     Motoboy direto da farmácia até seu endereço
                   </div>
                   <div style={{ fontSize: '0.82rem', fontWeight: 700, color: deliveryFee === 0 ? 'var(--pm-green)' : 'var(--pm-red)' }}>
-                    {deliveryFee === 0 ? 'GRÁTIS (Clube FarmaViva)' : 'R$ 7,90'}
+                    {deliveryFee === 0 ? 'GRÁTIS (Sempre Bem Pague Menos)' : 'R$ 7,90'}
                   </div>
                 </div>
 
@@ -215,7 +215,7 @@ export function CheckoutModal({ isOpen, onClose, cartItems, onCompleteOrder }) {
                     <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>Clique & Retire (30min)</span>
                   </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
-                    Loja FarmaViva: Av. Paulista, 1000
+                    Loja Pague Menos: Av. Paulista, 1000
                   </div>
                   <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--pm-green)' }}>
                     GRÁTIS

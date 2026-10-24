@@ -226,7 +226,7 @@ export function CameraCaptureModal({
               boxShadow: isUsingWebcam ? '0 0 8px #22C55E' : 'none'
             }} />
             <span style={{ fontSize: '0.82rem', fontWeight: 700, letterSpacing: '-0.2px' }}>
-              {isUsingWebcam ? 'Câmera do Dispositivo' : 'Scanner de Medicamentos FarmaViva'}
+              {isUsingWebcam ? 'Câmera do Dispositivo' : 'Scanner de Medicamentos Pague Menos'}
             </span>
           </div>
 
@@ -436,7 +436,7 @@ export function CameraCaptureModal({
                 {
                   id: 'repurchase',
                   title: 'Comprar este mesmo medicamento',
-                  desc: 'Recomprar exatamente o produto da foto com descontos do Clube FarmaViva.',
+                  desc: 'Recomprar exatamente o produto da foto com descontos do Sempre Bem Pague Menos.',
                   badge: 'Recompra',
                   badgeColor: '#001FD8'
                 },

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// 1. MODAL: NOSSAS LOJAS FARMAVIVA
+// 1. MODAL: NOSSAS LOJAS PAGUE MENOS
 // ============================================================================
 export function StoresModal({ isOpen, onClose, onSelectStore }) {
   const [storeQuery, setStoreQuery] = useState('');
@@ -29,7 +29,7 @@ export function StoresModal({ isOpen, onClose, onSelectStore }) {
   const stores = [
     {
       id: 'store-1',
-      name: 'FarmaViva Paulista - Flagship 24 Horas',
+      name: 'Pague Menos Paulista - Flagship 24 Horas',
       address: 'Av. Paulista, 1578 - Bela Vista, São Paulo - SP',
       distance: '650m da sua localização',
       hours: 'Aberto 24 Horas • Todos os dias',
@@ -39,7 +39,7 @@ export function StoresModal({ isOpen, onClose, onSelectStore }) {
     },
     {
       id: 'store-2',
-      name: 'FarmaViva Jardins - Oscar Freire',
+      name: 'Pague Menos Jardins - Oscar Freire',
       address: 'Rua Oscar Freire, 920 - Cerqueira César, São Paulo - SP',
       distance: '1,2 km',
       hours: 'Seg a Sáb: 07h às 23h • Dom: 08h às 22h',
@@ -49,17 +49,17 @@ export function StoresModal({ isOpen, onClose, onSelectStore }) {
     },
     {
       id: 'store-3',
-      name: 'FarmaViva Higienópolis - Shopping Pátio',
+      name: 'Pague Menos Higienópolis - Shopping Pátio',
       address: 'Av. Higienópolis, 618 - Higienópolis, São Paulo - SP',
       distance: '1,8 km',
       hours: 'Seg a Dom: 08h às 23h',
       phone: '(11) 3823-2200',
       badge: 'Retirada Express em 1h',
-      services: ['FarmaViva Clinic', 'Vacinas', 'Testes Rápidos']
+      services: ['Clinic Farma', 'Vacinas', 'Testes Rápidos']
     },
     {
       id: 'store-4',
-      name: 'FarmaViva Pinheiros - Faria Lima',
+      name: 'Pague Menos Pinheiros - Faria Lima',
       address: 'Av. Brigadeiro Faria Lima, 1485 - Pinheiros, São Paulo - SP',
       distance: '2,9 km',
       hours: 'Aberto 24 Horas',
@@ -262,7 +262,7 @@ export function AppDownloadModal({ isOpen, onClose }) {
         </span>
 
         <h3 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0F172A', margin: '0.75rem 0 0.4rem 0' }}>
-          Baixe o App FarmaViva
+          Baixe o App Pague Menos
         </h3>
 
         <p style={{ fontSize: '0.88rem', color: '#64748B', maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
@@ -367,7 +367,7 @@ export function HelpModal({ isOpen, onClose }) {
           </div>
           <div>
             <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0F172A', margin: 0 }}>
-              Central de Atendimento FarmaViva
+              Central de Atendimento Pague Menos
             </h3>
             <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0.15rem 0 0 0' }}>
               Estamos prontos para te ajudar em todos os canais oficiais
@@ -380,7 +380,7 @@ export function HelpModal({ isOpen, onClose }) {
           <div style={{ border: '1px solid #CBD5E1', borderRadius: '14px', padding: '1rem', backgroundColor: '#F8FAFC' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#059669', marginBottom: '0.4rem' }}>
               <MessageCircle size={20} />
-              <strong style={{ fontSize: '0.9rem' }}>WhatsApp FarmaViva</strong>
+              <strong style={{ fontSize: '0.9rem' }}>WhatsApp Pague Menos</strong>
             </div>
             <div style={{ fontSize: '0.78rem', color: '#475569' }}>
               (11) 98765-4321<br />Atendimento 24 horas por IA e farmacêuticos
@@ -536,7 +536,7 @@ export function CepLocationModal({ isOpen, onClose, onSaveCep }) {
               <span>CEP Atendido com Entrega Turbo em 45 minutos!</span>
             </div>
             <div style={{ fontSize: '0.78rem', color: '#334155', marginTop: '0.4rem', lineHeight: 1.4 }}>
-              • <strong>Retirada Express em Loja:</strong> Grátis em até 1 hora na FarmaViva Paulista.<br />
+              • <strong>Retirada Express em Loja:</strong> Grátis em até 1 hora na Pague Menos Paulista.<br />
               • <strong>Entrega Turbo:</strong> R$ 4,90 (Grátis para compras acima de R$ 99).
             </div>
           </div>

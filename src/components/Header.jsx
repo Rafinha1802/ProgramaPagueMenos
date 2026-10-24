@@ -117,7 +117,7 @@ export function Header({
             style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0', transition: 'color 0.15s ease' }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
             onMouseLeave={(e) => e.currentTarget.style.color = '#E2E8F0'}
-            title="Localizar farmácias FarmaViva mais próximas"
+            title="Localizar farmácias Pague Menos mais próximas"
           >
             <Store size={13} />
             <span>Nossas lojas</span>
@@ -127,7 +127,7 @@ export function Header({
             style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', color: '#E2E8F0', transition: 'color 0.15s ease' }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
             onMouseLeave={(e) => e.currentTarget.style.color = '#E2E8F0'}
-            title="Baixar o aplicativo FarmaViva para celular"
+            title="Baixar o aplicativo Pague Menos para celular"
           >
             <Smartphone size={13} />
             <span>Baixe nosso APP</span>
@@ -149,32 +149,26 @@ export function Header({
       <div className="container" style={{ padding: '0.85rem 1.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', flexWrap: 'nowrap' }}>
           
-          {/* Logo Oficial FarmaViva (Quadrado Vermelho com Cruz Branca + Tipografia Azul) */}
+          {/* Logo Oficial Pague Menos */}
           <div
-            style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer', flexShrink: 0 }}
+            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
             onClick={() => {
               setActiveCategory('all');
               if (onGoHome) onGoHome();
             }}
+            title="Pague Menos - Página Inicial"
           >
-            <div style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#E30613',
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              boxShadow: '0 3px 8px rgba(227, 6, 19, 0.3)'
-            }}>
-              <span style={{ fontSize: '1.7rem', fontWeight: 900, lineHeight: 1 }}>+</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#001FD8', letterSpacing: '-0.5px', lineHeight: 1 }}>
-                Farma<br /><span style={{ color: '#E30613' }}>Viva</span>
-              </div>
-            </div>
+            <img
+              src="/paguemenos-logo.png"
+              alt="Pague Menos"
+              style={{
+                height: '46px',
+                width: 'auto',
+                maxWidth: '180px',
+                objectFit: 'contain',
+                display: 'block'
+              }}
+            />
           </div>
 
           {/* Barra de Busca Dinâmica com IA Integrada */}
@@ -327,7 +321,7 @@ export function Header({
                   e.currentTarget.style.transform = 'translateY(0) scale(1)';
                   e.currentTarget.style.boxShadow = '0 3px 12px rgba(0, 31, 216, 0.35)';
                 }}
-                title="Consultar Farmacêutica Inteligente FarmaViva"
+                title="Consultar Farmacêutica Inteligente Pague Menos"
               >
                 <div style={{
                   display: 'flex',
@@ -376,7 +370,7 @@ export function Header({
                       <Sparkles size={13} />
                     </div>
                     <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#001FD8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      Assistente Farmacêutica FarmaViva
+                      Assistente Farmacêutica Pague Menos
                     </span>
                   </div>
                   <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Pressione Enter para buscar</span>
@@ -785,7 +779,7 @@ export function Header({
               }}
             >
               <Sparkles size={12} color="#001FD8" />
-              <span>Dra. IA Farmacêutica</span>
+              <span>Dra. IA Pague Menos</span>
             </button>
           </div>
         </div>

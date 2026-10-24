@@ -163,7 +163,7 @@ export function AiGuidedExperience({
                 <ShieldCheck size={13} />
               </div>
               <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0022D6' }}>
-                Orientação Farmacêutica FarmaViva
+                Orientação Farmacêutica Pague Menos
               </span>
             </div>
 
@@ -275,7 +275,7 @@ export function AiGuidedExperience({
                   <Sparkles size={14} color="#FDE047" />
                 </div>
                 <div style={{ fontSize: '0.76rem', color: '#1E293B', lineHeight: 1.4 }}>
-                  <strong>IA FarmaViva:</strong> Encontrei estes produtos em estoque na farmácia para sua situação. Você pode clicar em <strong>Comprar</strong> para ir direto ao carrinho ou ajustar sua necessidade pelo chat:
+                  <strong>IA Pague Menos:</strong> Encontrei estes produtos em estoque na farmácia para sua situação. Você pode clicar em <strong>Comprar</strong> para ir direto ao carrinho ou ajustar sua necessidade pelo chat:
                 </div>
               </div>
 
@@ -754,7 +754,7 @@ export function AiGuidedExperience({
               </span>
             </div>
             <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              Entrega em até 1 hora ou retire grátis na loja FarmaViva
+              Entrega em até 1 hora ou retire grátis na loja Pague Menos
             </div>
           </div>
 

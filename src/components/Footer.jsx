@@ -9,29 +9,31 @@ export function Footer({ onOpenSafetyModal, onOpenAiGuide }) {
         {/* Grid Institucional */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem', marginBottom: '2.5rem' }}>
           
-          {/* Coluna 1: FarmaViva */}
+          {/* Coluna 1: Pague Menos */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
               <div style={{
-                width: '32px',
-                height: '32px',
-                backgroundColor: 'var(--pm-red)',
+                backgroundColor: '#FFFFFF',
                 borderRadius: '8px',
-                display: 'flex',
+                padding: '0.35rem 0.65rem',
+                display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                fontWeight: 900,
-                fontSize: '1.2rem'
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
               }}>
-                +
+                <img
+                  src="/paguemenos-logo.png"
+                  alt="Pague Menos"
+                  style={{
+                    height: '32px',
+                    width: 'auto',
+                    objectFit: 'contain',
+                    display: 'block'
+                  }}
+                />
               </div>
-              <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FFFFFF' }}>
-                farma<span style={{ color: '#38BDF8' }}>viva</span>
-              </span>
             </div>
             <p style={{ fontSize: '0.82rem', color: '#94A3B8', lineHeight: 1.5, marginBottom: '1rem' }}>
-              Rede de Farmácias FarmaViva S.A. Presente em todo o Brasil promovendo saúde, cuidado preventivo e inteligência farmacêutica.
+              Empreendimentos Pague Menos S.A. Presente em todo o Brasil promovendo saúde, cuidado preventivo e inteligência farmacêutica.
             </p>
             <div style={{ fontSize: '0.8rem', color: '#CBD5E1', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Phone size={14} color="#38BDF8" /> Televendas: <strong>4002-8282</strong>
@@ -111,7 +113,7 @@ export function Footer({ onOpenSafetyModal, onOpenAiGuide }) {
             SE PERSISTIREM OS SINTOMAS, O MÉDICO DEVERÁ SER CONSULTADO. MEDICAMENTO GENÉRICO - LEI Nº 9.787/99.
           </p>
           <p>
-            FarmaViva Drogarias e Farmácias S/A | CNPJ: 06.626.253/0001-51 | As informações contidas neste site não devem ser usadas para automedicação e não substituem o diagnóstico médico.
+            Empreendimentos Pague Menos S/A | CNPJ: 06.626.253/0001-51 | As informações contidas neste site não devem ser usadas para automedicação e não substituem o diagnóstico médico.
           </p>
         </div>
 

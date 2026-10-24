@@ -74,7 +74,7 @@ export function AiGuidedBanner({ onSelectPreset, onSelectCustomPrompt }) {
               marginBottom: '0.6rem',
               lineHeight: 1.2
             }}>
-              Não sabe exatamente o que levar? A IA da FarmaViva monta sua cesta ideal.
+              Não sabe exatamente o que levar? A IA da Pague Menos monta sua cesta ideal.
             </h1>
             <p style={{
               fontSize: '1rem',
@@ -83,7 +83,7 @@ export function AiGuidedBanner({ onSelectPreset, onSelectCustomPrompt }) {
               maxWidth: '740px'
             }}>
               Em vez de pesquisar item por item ou abrir chatbots lentos, diga o que você precisa ou quanto quer gastar. 
-              Nossa inteligência consulta o catálogo em tempo real, aplica descontos do Clube FarmaViva e recomenda uma seleção completa com segurança médica.
+              Nossa inteligência consulta o catálogo em tempo real, aplica descontos do Sempre Bem Pague Menos e recomenda uma seleção completa com segurança médica.
             </p>
           </div>
 

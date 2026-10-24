@@ -1,4 +1,4 @@
-// Presets de Intenção e Jornadas Rápidas para a Farmácia FarmaViva
+// Presets de Intenção e Jornadas Rápidas para a Farmácia Pague Menos
 
 export const INTENT_PRESETS = [
   {
@@ -58,7 +58,7 @@ export const INTENT_PRESETS = [
       {
         id: 'orcamento-100-familia',
         label: 'Cuidados Família até R$ 100',
-        prompt: 'Cesta familiar com vitaminas FarmaViva, desodorante e alívio de dor dentro de 100 reais',
+        prompt: 'Cesta familiar com vitaminas Pague Menos, desodorante e alívio de dor dentro de 100 reais',
         budget: 100,
         targetProductIds: ['prod-14', 'pm-nivea-men', 'prod-08', 'prod-07'],
         badge: 'Família'
@@ -73,7 +73,7 @@ export const INTENT_PRESETS = [
     quickOptions: [
       {
         id: 'repetir-otimizado',
-        label: 'Repetir última cesta com Genéricos FarmaViva',
+        label: 'Repetir última cesta com Genéricos Pague Menos',
         prompt: 'Quero repetir minha compra habitual de relaxante muscular, dor de cabeça e vitamina C, mas economizando com alternativas genéricas',
         budget: 60,
         targetProductIds: ['prod-07', 'prod-09', 'prod-14'],

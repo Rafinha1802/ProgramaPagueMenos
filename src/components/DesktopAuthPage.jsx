@@ -102,14 +102,14 @@ export function DesktopAuthPage({
     setFormError(null);
     if (mode === 'login') {
       setLoginIdentifier('rafaella.guedes@email.com');
-      setLoginPassword('FarmaViva@2026');
+      setLoginPassword('PagueMenos@2026');
     } else {
       setRegName('Rafaella Guedes de Oliveira');
       setRegCpf('458.912.384-12');
       setRegEmail('rafaella.guedes@email.com');
       setRegPhone('(11) 98765-4321');
       setRegBirthDate('1994-08-15');
-      setRegPassword('FarmaViva@2026');
+      setRegPassword('PagueMenos@2026');
     }
   };
 
@@ -133,7 +133,7 @@ export function DesktopAuthPage({
 
     onLogin({
       name: name.charAt(0).toUpperCase() + name.slice(1),
-      email: loginIdentifier.includes('@') ? loginIdentifier : 'cliente@farmaviva.com.br',
+      email: loginIdentifier.includes('@') ? loginIdentifier : 'cliente@paguemenos.com.br',
       cpf: !loginIdentifier.includes('@') ? loginIdentifier : '458.***.***-12',
       phone: '(11) 98765-4321',
       isLoggedIn: true
@@ -218,7 +218,7 @@ export function DesktopAuthPage({
           boxSizing: 'border-box'
         }}
       >
-        {/* Barra Superior Compacta: Voltar, Logo FarmaViva e Ambiente Seguro */}
+        {/* Barra Superior Compacta: Voltar, Logo Pague Menos e Ambiente Seguro */}
         <div
           style={{
             display: 'flex',
@@ -260,26 +260,19 @@ export function DesktopAuthPage({
             <span>Voltar para a farmácia</span>
           </button>
 
-          {/* Logo FarmaViva */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-            <div style={{
-              width: '26px',
-              height: '26px',
-              backgroundColor: '#E30613',
-              borderRadius: '7px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              fontWeight: 900,
-              fontSize: '1rem',
-              lineHeight: 1
-            }}>
-              +
-            </div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#001FD8', letterSpacing: '-0.4px', lineHeight: 1 }}>
-              Farma<span style={{ color: '#E30613' }}>Viva</span>
-            </div>
+          {/* Logo Oficial Pague Menos */}
+          <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={onBackToStore} title="Pague Menos">
+            <img
+              src="/paguemenos-logo.png"
+              alt="Pague Menos"
+              style={{
+                height: '34px',
+                width: 'auto',
+                maxWidth: '140px',
+                objectFit: 'contain',
+                display: 'block'
+              }}
+            />
           </div>
 
           {/* Ambiente Seguro & Botão Fechar X */}
@@ -355,7 +348,7 @@ export function DesktopAuthPage({
                       {userSession.name}
                     </h2>
                     <span style={{ backgroundColor: '#DCFCE7', color: '#059669', fontSize: '0.68rem', fontWeight: 800, padding: '0.12rem 0.5rem', borderRadius: '999px' }}>
-                      Cliente FarmaViva Prime
+                      Cliente Sempre Bem Pague Menos
                     </span>
                   </div>
                   <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '0.15rem' }}>
@@ -529,7 +522,7 @@ export function DesktopAuthPage({
                   }}
                 >
                   <Sparkles size={12} color="#FDE047" />
-                  <span>Farmácia Digital FarmaViva</span>
+                  <span>Farmácia Digital Pague Menos</span>
                 </div>
 
                 <h1

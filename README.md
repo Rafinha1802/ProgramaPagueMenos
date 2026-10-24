@@ -1,4 +1,4 @@
-# 💊 FarmaViva — IA Commerce para Farmácias
+# 💊 Pague Menos — IA Commerce para Farmácias
 
 > **Protótipo desenvolvido para o desafio de IA Commerce da Pague Menos.**
 > Uma experiência de compra guiada por intenção — **não é mais um chatbot**.

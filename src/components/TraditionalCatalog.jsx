@@ -29,7 +29,7 @@ export function TraditionalCatalog({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
           <div>
             <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--pm-blue)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Catálogo Oficial FarmaViva
+              Catálogo Oficial Pague Menos
             </div>
             <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.5px' }}>
               {searchQuery ? `Resultados da busca por "${searchQuery}"` : 'Ofertas e Destaques da Farmácia'}

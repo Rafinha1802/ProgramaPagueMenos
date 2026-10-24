@@ -25,7 +25,10 @@ import {
   Upload,
   Calendar,
   Gift,
-  Bell
+  Bell,
+  Zap,
+  Flame,
+  Check
 } from 'lucide-react';
 import { CATALOG } from '../data/catalog';
 
@@ -47,6 +50,188 @@ export function DesktopHomePage({
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [currentBubbleTextIndex, setCurrentBubbleTextIndex] = useState(0);
   const [isFabBubbleOpen, setIsFabBubbleOpen] = useState(true);
+  const [neutrogenaSlide, setNeutrogenaSlide] = useState(0);
+  const [isPiscouPerdeuModalOpen, setIsPiscouPerdeuModalOpen] = useState(false);
+  const [piscouCountdown, setPiscouCountdown] = useState(3284); // ~54 min
+  const [piscouCategory, setPiscouCategory] = useState('all');
+  const [addedFlashId, setAddedFlashId] = useState(null);
+
+  // Timer regressivo das Ofertas Relâmpago Piscou Perdeu (renova a cada 1 hora)
+  useEffect(() => {
+    const flashTimer = setInterval(() => {
+      setPiscouCountdown((prev) => (prev > 0 ? prev - 1 : 3600));
+    }, 1000);
+    return () => clearInterval(flashTimer);
+  }, []);
+
+  const formatCountdown = (totalSeconds) => {
+    const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+    const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+    const s = (totalSeconds % 60).toString().padStart(2, '0');
+    return { h, m, s };
+  };
+  const { h: flashH, m: flashM, s: flashS } = formatCountdown(piscouCountdown);
+
+  const PISCOU_PERDEU_ITEMS = [
+    {
+      id: 'piscou-dorflex',
+      catalogId: 'prod-1',
+      name: 'Dorflex Analgésico e Relaxante Muscular 36 Comprimidos',
+      shortName: 'Dorflex 36 Comprimidos',
+      brand: 'SANOFI',
+      category: 'medicamentos',
+      categoryLabel: 'Medicamentos',
+      originalPrice: 27.99,
+      flashPrice: 6.49,
+      discountPct: 77,
+      image: '/products/dorflex.jpg',
+      soldPercent: 91,
+      stockLeft: 4,
+      badge: '⚡ Top 1 Mais Vendido'
+    },
+    {
+      id: 'piscou-secret',
+      catalogId: 'pm-secret-clinical',
+      name: 'Gel Desodorante Antitranspirante Clinical Strength Secret 45g',
+      shortName: 'Desodorante Clinical Secret 45g',
+      brand: 'SECRET',
+      category: 'higiene',
+      categoryLabel: 'Higiene & Cuidados',
+      originalPrice: 59.90,
+      flashPrice: 14.99,
+      discountPct: 75,
+      image: '/products/secret-clinical.jpg',
+      soldPercent: 95,
+      stockLeft: 3,
+      badge: '🔥 75% OFF'
+    },
+    {
+      id: 'piscou-neosaldina',
+      catalogId: 'prod-2',
+      name: 'Neosaldina Alívio de Dores de Cabeça e Enxaqueca 30 Drágeas',
+      shortName: 'Neosaldina 30 Drágeas',
+      brand: 'COSMED',
+      category: 'medicamentos',
+      categoryLabel: 'Medicamentos',
+      originalPrice: 38.90,
+      flashPrice: 9.90,
+      discountPct: 74,
+      image: '/products/neosaldina.jpg',
+      soldPercent: 84,
+      stockLeft: 7,
+      badge: '⚡ Destaque Dor'
+    },
+    {
+      id: 'piscou-vitamina-c',
+      catalogId: 'pm-vitamina-c',
+      name: 'Vitamina C 1g + Zinco 10mg Efervescente 30 Comprimidos - Pague Menos',
+      shortName: 'Vitamina C + Zinco Pague Menos',
+      brand: 'PAGUE MENOS CARE',
+      category: 'suplementos',
+      categoryLabel: 'Suplementos',
+      originalPrice: 49.90,
+      flashPrice: 16.90,
+      discountPct: 66,
+      image: '/products/vitamina-c-pm.jpg',
+      soldPercent: 78,
+      stockLeft: 9,
+      badge: '💊 Imunidade'
+    },
+    {
+      id: 'piscou-dipirona',
+      catalogId: 'prod-4',
+      name: 'Dipirona Monoidratada Gotas 500mg/ml 20ml - EMS Genérico',
+      shortName: 'Dipirona Gotas 20ml EMS',
+      brand: 'EMS GENÉRICO',
+      category: 'medicamentos',
+      categoryLabel: 'Medicamentos',
+      originalPrice: 16.50,
+      flashPrice: 3.99,
+      discountPct: 76,
+      image: '/products/dipirona-ems.jpg',
+      soldPercent: 93,
+      stockLeft: 5,
+      badge: '⭐ Genérico ANVISA'
+    },
+    {
+      id: 'piscou-cerave',
+      catalogId: 'prod-3',
+      name: 'Loção Facial CeraVe com Ceramidas e Ácido Hialurônico 52ml',
+      shortName: 'CeraVe Facial 52ml',
+      brand: 'CERAVE',
+      category: 'dermo',
+      categoryLabel: 'Dermocosméticos',
+      originalPrice: 89.90,
+      flashPrice: 39.90,
+      discountPct: 56,
+      image: '/products/cerave.jpg',
+      soldPercent: 87,
+      stockLeft: 6,
+      badge: '✨ Dermo Favorito'
+    },
+    {
+      id: 'piscou-nivea-men',
+      catalogId: 'pm-nivea-men',
+      name: 'Desodorante Antitranspirante Aerosol Nivea Men Deep Black Carbon 150ml',
+      shortName: 'Nivea Men Deep 150ml',
+      brand: 'NIVEA',
+      category: 'higiene',
+      categoryLabel: 'Higiene & Cuidados',
+      originalPrice: 24.90,
+      flashPrice: 8.90,
+      discountPct: 64,
+      image: '/products/nivea-men.jpg',
+      soldPercent: 81,
+      stockLeft: 8,
+      badge: '🛡️ Proteção 48h'
+    },
+    {
+      id: 'piscou-neutrogena',
+      catalogId: 'pm-neutrogena-facial-matte',
+      name: 'Protetor Solar Facial Neutrogena Sun Fresh Pele Mista a Oleosa FPS 70',
+      shortName: 'Neutrogena Sun Fresh FPS 70',
+      brand: 'NEUTROGENA',
+      category: 'dermo',
+      categoryLabel: 'Dermocosméticos',
+      originalPrice: 89.90,
+      flashPrice: 49.90,
+      discountPct: 45,
+      image: '/products/neutrogena-sunfresh-facial.png',
+      soldPercent: 96,
+      stockLeft: 2,
+      badge: '☀️ Alta Demanda'
+    }
+  ];
+
+  const handleAddPiscouToCart = (item, e) => {
+    if (e) e.stopPropagation();
+    const catalogItem = CATALOG.find((c) => c.id === item.catalogId) || {
+      id: item.catalogId || item.id,
+      name: item.name,
+      brand: item.brand,
+      price: item.flashPrice,
+      clubPrice: item.flashPrice,
+      originalPrice: item.originalPrice,
+      image: item.image,
+      installments: `1x de R$ ${item.flashPrice.toFixed(2).replace('.', ',')}`,
+      discountBadge: `↓ ${item.discountPct}%`,
+      badge: 'Oferta Piscou Perdeu'
+    };
+
+    onAddToCart({
+      ...catalogItem,
+      price: item.flashPrice,
+      clubPrice: item.flashPrice,
+      isPiscouPerdeu: true
+    });
+
+    setAddedFlashId(item.id);
+    setTimeout(() => setAddedFlashId(null), 1800);
+
+    if (onShowToast) {
+      onShowToast(`⚡ ${item.shortName} adicionado à sacola por R$ ${item.flashPrice.toFixed(2).replace('.', ',')}!`);
+    }
+  };
 
   const desktopFileInputRef = useRef(null);
   const desktopDocInputRef = useRef(null);
@@ -163,11 +348,11 @@ export function DesktopHomePage({
     onOpenAiWithPrompt(prompt, budget, preferGenerics, attachment);
   };
 
-  // Ofertas em Destaque (5 Cards com degradê FarmaViva)
+  // Ofertas em Destaque (5 Cards com degradê Pague Menos)
   const promoCards = [
     {
       id: 'promo-1',
-      brand: 'Saúde FarmaViva',
+      brand: 'Saúde Pague Menos',
       title: "SHAMPOO INFANTIL JOHNSON'S BABY",
       highlight: '20% DE DESCONTO',
       gradient: 'linear-gradient(135deg, #0A196F 0%, #001242 100%)',
@@ -209,7 +394,7 @@ export function DesktopHomePage({
     {
       id: 'promo-5',
       brand: 'Especial Genéricos',
-      title: 'GENÉRICOS FARMAVIVA',
+      title: 'GENÉRICOS PAGUE MENOS',
       highlight: 'LEVE 3 PAGUE 2 • ATÉ 95% OFF',
       gradient: 'linear-gradient(135deg, #4A0072 0%, #7B1FA2 100%)',
       image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80',
@@ -943,7 +1128,7 @@ export function DesktopHomePage({
       </section>
 
       {/* ====================================================================
-          1.2 BANNERS DE PROPAGANDA OFICIAIS FARMAVIVA
+          1.2 BANNERS DE PROPAGANDA OFICIAIS PAGUE MENOS
           ==================================================================== */}
       <section style={{ padding: '1.25rem 0 1rem 0' }}>
         <div className="container">
@@ -1687,7 +1872,7 @@ export function DesktopHomePage({
                     {card.highlight}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem', fontSize: '0.68rem', fontWeight: 800, color: '#E2E8F0' }}>
-                    <span style={{ color: '#E30613', fontWeight: 900 }}>+</span> FarmaViva
+                    <span style={{ color: '#E30613', fontWeight: 900 }}>+</span> Pague Menos
                   </div>
                 </div>
 
@@ -1731,74 +1916,325 @@ export function DesktopHomePage({
       <section style={{ padding: '1.75rem 0 0.75rem 0' }}>
         <div className="container">
           <div style={{
-            background: 'linear-gradient(90deg, #001FD8 0%, #00126B 60%, #000B42 100%)',
+            background: 'radial-gradient(circle at 85% 20%, rgba(253, 224, 71, 0.22) 0%, transparent 45%), radial-gradient(circle at 10% 80%, rgba(0, 110, 255, 0.28) 0%, transparent 50%), linear-gradient(105deg, #00128B 0%, #001FD8 40%, #04092E 100%)',
             borderRadius: '24px',
-            padding: '1.75rem 2.25rem',
+            padding: '2rem 2.25rem',
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 8px 24px rgba(0, 31, 216, 0.22)'
+            boxShadow: '0 16px 40px rgba(0, 31, 216, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.15) inset',
+            gap: '1.75rem',
+            flexWrap: 'wrap'
           }}>
-            {/* Esquerda: Logo Piscou Perdeu com Despertador */}
-            <div style={{ zIndex: 2 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
+            {/* Marca d'água sutil de raio no fundo */}
+            <div style={{
+              position: 'absolute',
+              right: '340px',
+              top: '-30px',
+              opacity: 0.05,
+              pointerEvents: 'none',
+              transform: 'rotate(15deg)'
+            }}>
+              <Zap size={280} color="#FFFFFF" fill="#FFFFFF" />
+            </div>
+
+            {/* Esquerda: Logo Piscou Perdeu com Despertador e Contador Regressivo */}
+            <div style={{ zIndex: 2, flex: '1 1 360px', maxWidth: '440px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.65rem', flexWrap: 'wrap' }}>
                 <div style={{
                   backgroundColor: '#E30613',
                   color: '#FFFFFF',
-                  padding: '0.25rem 0.65rem',
-                  borderRadius: '8px',
+                  padding: '0.3rem 0.85rem',
+                  borderRadius: '999px',
                   fontWeight: 900,
-                  fontSize: '0.75rem',
-                  textTransform: 'uppercase'
+                  fontSize: '0.76rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  letterSpacing: '0.5px',
+                  boxShadow: '0 0 16px rgba(227, 6, 19, 0.65)'
                 }}>
-                  Ofertas Relâmpago
+                  <Zap size={14} fill="#FDE047" color="#FDE047" />
+                  <span>OFERTAS RELÂMPAGO</span>
                 </div>
-                <span style={{ fontSize: '0.8rem', color: '#93C5FD', fontWeight: 700 }}>
-                  Atualizadas a cada 1 hora
-                </span>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#22C55E',
+                    boxShadow: '0 0 8px #22C55E',
+                    display: 'inline-block'
+                  }} />
+                  <span style={{ fontSize: '0.8rem', color: '#93C5FD', fontWeight: 700 }}>
+                    Atualizadas a cada 1 hora
+                  </span>
+                </div>
               </div>
-              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, lineHeight: 1, letterSpacing: '-1px', margin: 0 }}>
-                PISCOU<br /><span style={{ color: '#FDE047' }}>PERDEU</span>
+
+              <h2 style={{ fontSize: '2.8rem', fontWeight: 900, lineHeight: 0.95, letterSpacing: '-1.5px', margin: 0 }}>
+                PISCOU<br />
+                <span style={{
+                  color: '#FDE047',
+                  textShadow: '0 0 25px rgba(253, 224, 71, 0.5)'
+                }}>
+                  PERDEU
+                </span>
               </h2>
-              <p style={{ fontSize: '0.88rem', color: '#E2E8F0', marginTop: '0.65rem', maxWidth: '380px' }}>
+
+              {/* Temporizador Regressivo Visual */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.85rem' }}>
+                <span style={{ fontSize: '0.78rem', color: '#CBD5E1', fontWeight: 600 }}>
+                  Termina em:
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <div style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(253, 224, 71, 0.4)',
+                    borderRadius: '8px',
+                    padding: '0.25rem 0.55rem',
+                    fontWeight: 900,
+                    fontSize: '0.88rem',
+                    color: '#FDE047',
+                    fontFamily: 'monospace'
+                  }}>
+                    {flashH}h
+                  </div>
+                  <span style={{ color: '#FDE047', fontWeight: 900 }}>:</span>
+                  <div style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(253, 224, 71, 0.4)',
+                    borderRadius: '8px',
+                    padding: '0.25rem 0.55rem',
+                    fontWeight: 900,
+                    fontSize: '0.88rem',
+                    color: '#FDE047',
+                    fontFamily: 'monospace'
+                  }}>
+                    {flashM}m
+                  </div>
+                  <span style={{ color: '#FDE047', fontWeight: 900 }}>:</span>
+                  <div style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    border: '1px solid rgba(253, 224, 71, 0.4)',
+                    borderRadius: '8px',
+                    padding: '0.25rem 0.55rem',
+                    fontWeight: 900,
+                    fontSize: '0.88rem',
+                    color: '#FDE047',
+                    fontFamily: 'monospace'
+                  }}>
+                    {flashS}s
+                  </div>
+                </div>
+              </div>
+
+              <p style={{ fontSize: '0.85rem', color: '#E2E8F0', marginTop: '0.55rem', maxWidth: '380px', lineHeight: 1.35 }}>
                 Preços especiais válidos apenas hoje com retirada em até 1h na sua loja mais próxima.
               </p>
+
+              {/* Botão de Ação que abre o Modal de Ofertas */}
+              <button
+                type="button"
+                onClick={() => setIsPiscouPerdeuModalOpen(true)}
+                style={{
+                  marginTop: '0.9rem',
+                  backgroundColor: '#FDE047',
+                  color: '#00128B',
+                  fontWeight: 900,
+                  fontSize: '0.82rem',
+                  padding: '0.6rem 1.15rem',
+                  borderRadius: '999px',
+                  border: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(253, 224, 71, 0.45)',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.backgroundColor = '#FEF08A';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.backgroundColor = '#FDE047';
+                }}
+              >
+                <Flame size={16} fill="#00128B" />
+                <span>Ver todas as 8 ofertas relâmpago</span>
+                <ArrowRight size={14} />
+              </button>
             </div>
 
-            {/* Centro / Direita: Produtos do Piscou Perdeu com preços */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', zIndex: 2, flexWrap: 'wrap' }}>
+            {/* Centro / Direita: Produtos do Piscou Perdeu com packshots limpos e ação rápida */}
+            <div style={{ display: 'flex', alignItems: 'stretch', gap: '0.9rem', zIndex: 2, flexWrap: 'wrap' }}>
+              {PISCOU_PERDEU_ITEMS.slice(0, 3).map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setIsPiscouPerdeuModalOpen(true)}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255, 255, 255, 0.22)',
+                    borderRadius: '18px',
+                    padding: '0.85rem 0.95rem',
+                    width: '182px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
+                    e.currentTarget.style.borderColor = 'rgba(253, 224, 71, 0.6)';
+                    e.currentTarget.style.boxShadow = '0 12px 28px rgba(0, 0, 0, 0.35)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.22)';
+                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)';
+                  }}
+                >
+                  {/* Badge de Desconto */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    backgroundColor: '#E30613',
+                    color: '#FFFFFF',
+                    fontWeight: 900,
+                    fontSize: '0.68rem',
+                    padding: '0.2rem 0.45rem',
+                    borderRadius: '6px',
+                    boxShadow: '0 2px 6px rgba(227, 6, 19, 0.5)'
+                  }}>
+                    -{item.discountPct}%
+                  </div>
 
-              {/* Produto 1: Escova Dental */}
-              <div style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: '16px', padding: '0.85rem 1.15rem', display: 'flex', alignItems: 'center', gap: '0.75rem', backdropFilter: 'blur(8px)' }}>
-                <img
-                  src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=200&q=80"
-                  alt="Escova Dental"
-                  style={{ width: '54px', height: '54px', objectFit: 'contain' }}
-                />
-                <div>
-                  <div style={{ fontSize: '0.72rem', color: '#CBD5E1', textDecoration: 'line-through' }}>DE: R$ 27,99</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#FDE047' }}>POR R$ 6,49</div>
-                  <div style={{ fontSize: '0.65rem', color: '#FFFFFF', fontWeight: 700 }}>CADA</div>
+                  {/* Foto Limpa do Packshot em Base Branca */}
+                  <div style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '12px',
+                    padding: '0.35rem',
+                    height: '84px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '0.55rem',
+                    marginTop: '0.3rem'
+                  }}>
+                    <img
+                      src={item.image}
+                      alt={item.shortName}
+                      style={{
+                        maxHeight: '76px',
+                        maxWidth: '100%',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </div>
+
+                  {/* Detalhes */}
+                  <div>
+                    <div style={{
+                      fontSize: '0.66rem',
+                      color: '#93C5FD',
+                      fontWeight: 800,
+                      textTransform: 'uppercase'
+                    }}>
+                      {item.brand}
+                    </div>
+                    <div style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: '#FFFFFF',
+                      lineHeight: 1.25,
+                      marginBottom: '0.35rem',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }} title={item.name}>
+                      {item.shortName}
+                    </div>
+
+                    {/* Preços */}
+                    <div>
+                      <div style={{ fontSize: '0.68rem', color: '#CBD5E1', textDecoration: 'line-through' }}>
+                        DE: R$ {item.originalPrice.toFixed(2).replace('.', ',')}
+                      </div>
+                      <div style={{ fontSize: '1.22rem', fontWeight: 900, color: '#FDE047', lineHeight: 1.1 }}>
+                        POR R$ {item.flashPrice.toFixed(2).replace('.', ',')}
+                      </div>
+                      <div style={{ fontSize: '0.62rem', color: '#FFFFFF', fontWeight: 700 }}>
+                        CADA
+                      </div>
+                    </div>
+
+                    {/* Barra de urgência de estoque */}
+                    <div style={{ marginTop: '0.45rem', marginBottom: '0.5rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem', color: '#FDE047', fontWeight: 700, marginBottom: '0.2rem' }}>
+                        <span>Restam {item.stockLeft} un</span>
+                        <span>{item.soldPercent}%</span>
+                      </div>
+                      <div style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '999px', overflow: 'hidden' }}>
+                        <div style={{ width: `${item.soldPercent}%`, height: '100%', backgroundColor: '#FDE047', borderRadius: '999px' }} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Botão de Adicionar à Sacola */}
+                  <button
+                    type="button"
+                    onClick={(e) => handleAddPiscouToCart(item, e)}
+                    style={{
+                      width: '100%',
+                      backgroundColor: addedFlashId === item.id ? '#22C55E' : '#001FD8',
+                      color: '#FFFFFF',
+                      border: '1px solid rgba(255, 255, 255, 0.35)',
+                      borderRadius: '8px',
+                      padding: '0.45rem 0.5rem',
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.35rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (addedFlashId !== item.id) e.currentTarget.style.backgroundColor = '#001489';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (addedFlashId !== item.id) e.currentTarget.style.backgroundColor = '#001FD8';
+                    }}
+                  >
+                    {addedFlashId === item.id ? (
+                      <>
+                        <Check size={13} />
+                        <span>Adicionado!</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag size={13} />
+                        <span>+ Sacola</span>
+                      </>
+                    )}
+                  </button>
                 </div>
-              </div>
-
-              {/* Produto 2: Desodorante Clinical */}
-              <div style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: '16px', padding: '0.85rem 1.15rem', display: 'flex', alignItems: 'center', gap: '0.75rem', backdropFilter: 'blur(8px)' }}>
-                <img
-                  src="https://images.unsplash.com/photo-1619451334792-150fd785ee74?auto=format&fit=crop&w=200&q=80"
-                  alt="Desodorante Clinical"
-                  style={{ width: '54px', height: '54px', objectFit: 'contain' }}
-                />
-                <div>
-                  <div style={{ fontSize: '0.72rem', color: '#CBD5E1', textDecoration: 'line-through' }}>DE: R$ 37,99</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#FDE047' }}>POR R$ 14,99</div>
-                  <div style={{ fontSize: '0.65rem', color: '#FFFFFF', fontWeight: 700 }}>CADA</div>
-                </div>
-              </div>
-
+              ))}
             </div>
 
           </div>
@@ -1934,6 +2370,277 @@ export function DesktopHomePage({
       </section>
 
       {/* ====================================================================
+          5.1 VITRINE ESPECIAL NEUTROGENA SUN FRESH (COMO NO PRINT OFICIAL)
+          ==================================================================== */}
+      <section style={{ padding: '0.5rem 0 1.5rem 0' }}>
+        <div className="container">
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '20px',
+            border: '1px solid #E2E8F0',
+            padding: '1.75rem 1.5rem',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+            position: 'relative'
+          }}>
+            {/* Header da Vitrine */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <div style={{
+                  width: '6px',
+                  height: '28px',
+                  backgroundColor: '#004CB7',
+                  borderRadius: '4px'
+                }} />
+                <div>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.3px', margin: 0 }}>
+                    Especial Neutrogena Sun Fresh
+                  </h3>
+                  <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0.15rem 0 0 0' }}>
+                    Proteção solar com toque seco, efeito matte e rápida absorção
+                  </p>
+                </div>
+              </div>
+
+              <span style={{
+                backgroundColor: '#EFF6FF',
+                color: '#004CB7',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                padding: '0.3rem 0.85rem',
+                borderRadius: '999px',
+                border: '1px solid #BFDBFE'
+              }}>
+                Linha Completa Facial & Corporal
+              </span>
+            </div>
+
+            {/* Carrossel de Produtos */}
+            <div style={{ position: 'relative' }}>
+              {/* Botão Esquerda */}
+              <button
+                type="button"
+                onClick={() => setNeutrogenaSlide(0)}
+                style={{
+                  position: 'absolute',
+                  left: '-16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #CBD5E1',
+                  color: '#004CB7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+                  zIndex: 10,
+                  transition: 'all 0.15s ease',
+                  opacity: neutrogenaSlide === 0 ? 0.5 : 1
+                }}
+                disabled={neutrogenaSlide === 0}
+                title="Voltar produtos"
+              >
+                <ChevronLeft size={22} strokeWidth={2.5} />
+              </button>
+
+              {/* Botão Direita */}
+              <button
+                type="button"
+                onClick={() => setNeutrogenaSlide(1)}
+                style={{
+                  position: 'absolute',
+                  right: '-16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #CBD5E1',
+                  color: '#004CB7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+                  zIndex: 10,
+                  transition: 'all 0.15s ease',
+                  opacity: neutrogenaSlide === 1 ? 0.5 : 1
+                }}
+                disabled={neutrogenaSlide === 1}
+                title="Avançar produtos"
+              >
+                <ChevronRight size={22} strokeWidth={2.5} />
+              </button>
+
+              {/* Grid dos Cards com Divisórias Verticais */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(6, 1fr)',
+                border: '1px solid #F1F5F9',
+                borderRadius: '16px',
+                overflow: 'hidden'
+              }}>
+                {CATALOG.filter(p => p.brand === 'NEUTROGENA').map((prod, idx, arr) => (
+                  <div
+                    key={prod.id}
+                    style={{
+                      padding: '1.25rem 1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      backgroundColor: '#FFFFFF',
+                      borderRight: idx < arr.length - 1 ? '1px solid #F1F5F9' : 'none',
+                      transition: 'background-color 0.15s ease',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FFFFFF'}
+                  >
+                    {/* Imagem do Produto em Fundo Branco */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '145px',
+                      marginBottom: '0.85rem'
+                    }}>
+                      <img
+                        src={prod.image}
+                        alt={prod.name}
+                        style={{
+                          maxHeight: '135px',
+                          maxWidth: '100%',
+                          objectFit: 'contain',
+                          display: 'block'
+                        }}
+                      />
+                    </div>
+
+                    {/* Título do Produto */}
+                    <h4 style={{
+                      fontSize: '0.84rem',
+                      fontWeight: 600,
+                      color: '#1E293B',
+                      lineHeight: 1.35,
+                      margin: '0 0 0.85rem 0',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      minHeight: '2.3rem'
+                    }} title={prod.name}>
+                      {prod.name}
+                    </h4>
+
+                    {/* Linha Marca + Botão Circular de Adicionar à Cesta */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '0.75rem'
+                    }}>
+                      <span style={{
+                        fontSize: '0.78rem',
+                        fontWeight: 900,
+                        fontStyle: 'italic',
+                        color: '#0F172A',
+                        letterSpacing: '0.4px',
+                        textTransform: 'uppercase'
+                      }}>
+                        {prod.brand}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => onAddToCart(prod)}
+                        style={{
+                          width: '38px',
+                          height: '38px',
+                          borderRadius: '50%',
+                          backgroundColor: '#004CB7',
+                          color: '#FFFFFF',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: 'none',
+                          cursor: 'pointer',
+                          boxShadow: '0 3px 8px rgba(0, 76, 183, 0.35)',
+                          transition: 'transform 0.15s ease, background-color 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'scale(1.08)';
+                          e.currentTarget.style.backgroundColor = '#003A8C';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                          e.currentTarget.style.backgroundColor = '#004CB7';
+                        }}
+                        title={`Adicionar ${prod.name} à cesta`}
+                      >
+                        <ShoppingBag size={18} />
+                      </button>
+                    </div>
+
+                    {/* Preço em Destaque Azul & Parcelamento */}
+                    <div style={{ marginTop: 'auto' }}>
+                      <div style={{
+                        fontSize: '1.38rem',
+                        fontWeight: 900,
+                        color: '#004CB7',
+                        letterSpacing: '-0.5px',
+                        lineHeight: 1.1
+                      }}>
+                        R$ {prod.clubPrice.toFixed(2).replace('.', ',')}
+                      </div>
+                      <div style={{
+                        fontSize: '0.74rem',
+                        color: '#64748B',
+                        marginTop: '0.2rem',
+                        fontWeight: 500
+                      }}>
+                        {prod.installments || '3x sem juros'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Indicadores do Slider (Pílula Azul + Ponto Cinza) */}
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginTop: '1.25rem' }}>
+                <span
+                  onClick={() => setNeutrogenaSlide(0)}
+                  style={{
+                    width: neutrogenaSlide === 0 ? '24px' : '6px',
+                    height: '6px',
+                    borderRadius: '999px',
+                    backgroundColor: neutrogenaSlide === 0 ? '#004CB7' : '#CBD5E1',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                />
+                <span
+                  onClick={() => setNeutrogenaSlide(1)}
+                  style={{
+                    width: neutrogenaSlide === 1 ? '24px' : '6px',
+                    height: '6px',
+                    borderRadius: '999px',
+                    backgroundColor: neutrogenaSlide === 1 ? '#004CB7' : '#CBD5E1',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                />
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ====================================================================
           6. SEÇÃO "MELHORES OFERTAS PARA VOCÊ!"
           ==================================================================== */}
       <section style={{ padding: '2rem 0' }}>
@@ -1952,8 +2659,8 @@ export function DesktopHomePage({
                 {activeCategory === 'Higiene' && 'Higiene Pessoal'}
                 {activeCategory === 'Suplementos' && 'Vida Saudável & Suplementos'}
                 {activeCategory === 'conveniencia' && 'Conveniência & Snacks'}
-                {activeCategory === 'servicos' && 'Serviços de Saúde & FarmaViva Clinic'}
-                {activeCategory === 'exclusivas' && 'Marcas Exclusivas FarmaViva'}
+                {activeCategory === 'servicos' && 'Serviços de Saúde & Clinic Farma Pague Menos'}
+                {activeCategory === 'exclusivas' && 'Marcas Exclusivas Pague Menos'}
                 {(!activeCategory || activeCategory === 'all' || activeCategory === 'ofertas') && 'Melhores Ofertas para Você!'}
               </h2>
               <span style={{ fontSize: '0.84rem', color: '#64748B' }}>
@@ -1989,7 +2696,7 @@ export function DesktopHomePage({
             )}
           </div>
 
-          {/* Grid Oficial de Produtos FarmaViva */}
+          {/* Grid Oficial de Produtos Pague Menos */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(5, 1fr)',
@@ -2007,101 +2714,114 @@ export function DesktopHomePage({
                   backgroundColor: '#FFFFFF',
                   borderRadius: '16px',
                   border: '1px solid #E2E8F0',
-                  padding: '1rem',
+                  padding: '1.15rem 1rem',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                  position: 'relative'
+                  position: 'relative',
+                  transition: 'box-shadow 0.15s ease, transform 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                {/* Badge de Oferta */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                {/* Badge de Oferta e Coração */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                   <span style={{
                     backgroundColor: '#FDE8EA',
                     color: '#E30613',
                     fontSize: '0.68rem',
                     fontWeight: 800,
-                    padding: '0.15rem 0.45rem',
+                    padding: '0.15rem 0.5rem',
                     borderRadius: '6px'
                   }}>
                     {prod.discountBadge || 'Super oferta'}
                   </span>
-                  <Heart size={16} color="#CBD5E1" style={{ cursor: 'pointer' }} />
+                  <Heart size={16} color="#94A3B8" style={{ cursor: 'pointer' }} />
                 </div>
 
-                {/* Imagem do Produto */}
-                <div style={{ display: 'flex', justifyContent: 'center', margin: '0.5rem 0 1rem 0' }}>
+                {/* Imagem do Produto em Fundo Branco Puro */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '140px', margin: '0.35rem 0 0.85rem 0' }}>
                   <img
                     src={prod.image}
                     alt={prod.name}
                     style={{
-                      height: '130px',
+                      maxHeight: '135px',
                       maxWidth: '100%',
-                      objectFit: 'contain'
+                      objectFit: 'contain',
+                      display: 'block'
                     }}
                   />
                 </div>
 
-                {/* Dados do Produto */}
-                <div>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#001FD8', textTransform: 'uppercase' }}>
+                {/* Título do Produto */}
+                <h4 style={{
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  color: '#1E293B',
+                  lineHeight: 1.35,
+                  margin: '0 0 0.75rem 0',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  minHeight: '2.3rem'
+                }} title={prod.name}>
+                  {prod.name}
+                </h4>
+
+                {/* Linha: Marca + Botão Circular de Adicionar à Cesta */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '0.65rem'
+                }}>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 900, fontStyle: 'italic', color: '#0F172A', textTransform: 'uppercase' }}>
                     {prod.brand}
                   </div>
-                  <h4 style={{
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    color: '#1E293B',
-                    lineHeight: 1.35,
-                    margin: '0.25rem 0 0.65rem 0',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    minHeight: '2.2rem'
-                  }}>
-                    {prod.name}
-                  </h4>
-
-                  {/* Preços */}
-                  <div style={{ marginTop: 'auto', paddingTop: '0.5rem', borderTop: '1px solid #F1F5F9' }}>
-                    <div style={{ fontSize: '0.72rem', color: '#94A3B8', textDecoration: 'line-through' }}>
-                      De R$ {prod.originalPrice.toFixed(2).replace('.', ',')}
-                    </div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#001FD8', lineHeight: 1.1 }}>
-                      R$ {prod.clubPrice.toFixed(2).replace('.', ',')}
-                    </div>
-                    <div style={{ fontSize: '0.68rem', color: '#008744', fontWeight: 800, marginTop: '0.15rem' }}>
-                      ★ Clube Sempre Bem
-                    </div>
-                  </div>
-
-                  {/* Botão Comprar */}
                   <button
                     type="button"
                     onClick={() => onAddToCart(prod)}
                     style={{
-                      width: '100%',
-                      backgroundColor: '#E30613',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      backgroundColor: '#004CB7',
                       color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '0.55rem',
-                      fontSize: '0.82rem',
-                      fontWeight: 800,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '0.4rem',
-                      marginTop: '0.75rem',
+                      border: 'none',
                       cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(227, 6, 19, 0.25)'
+                      boxShadow: '0 2px 6px rgba(0, 76, 183, 0.35)',
+                      transition: 'transform 0.15s ease'
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title="Adicionar à cesta"
                   >
-                    <ShoppingBag size={14} />
-                    <span>Comprar</span>
+                    <ShoppingBag size={17} />
                   </button>
+                </div>
 
+                {/* Preços e Parcelamento */}
+                <div style={{ marginTop: 'auto', paddingTop: '0.4rem', borderTop: '1px solid #F1F5F9' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+                    De R$ {prod.originalPrice.toFixed(2).replace('.', ',')}
+                  </div>
+                  <div style={{ fontSize: '1.32rem', fontWeight: 900, color: '#004CB7', letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+                    R$ {prod.clubPrice.toFixed(2).replace('.', ',')}
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '0.15rem' }}>
+                    {prod.installments || '1x sem juros'}
+                  </div>
                 </div>
 
               </div>
@@ -2110,6 +2830,397 @@ export function DesktopHomePage({
 
         </div>
       </section>
+
+      {/* ====================================================================
+          MODAL INTERATIVO: PISCOU PERDEU (OFERTAS RELÂMPAGO)
+          ==================================================================== */}
+      {isPiscouPerdeuModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(7, 13, 35, 0.82)',
+            backdropFilter: 'blur(10px)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.25rem'
+          }}
+          onClick={() => setIsPiscouPerdeuModalOpen(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '24px',
+              maxWidth: '1060px',
+              width: '100%',
+              maxHeight: '92vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.45)',
+              overflow: 'hidden',
+              border: '1px solid #E2E8F0'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header com Gradiente Piscou Perdeu */}
+            <div style={{
+              background: 'radial-gradient(circle at 85% 20%, rgba(253, 224, 71, 0.25) 0%, transparent 45%), linear-gradient(105deg, #00128B 0%, #001FD8 50%, #000B42 100%)',
+              color: '#FFFFFF',
+              padding: '1.5rem 2rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'relative',
+              flexWrap: 'wrap',
+              gap: '1rem'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
+                  <span style={{
+                    backgroundColor: '#E30613',
+                    color: '#FFFFFF',
+                    padding: '0.2rem 0.65rem',
+                    borderRadius: '999px',
+                    fontWeight: 900,
+                    fontSize: '0.72rem',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    letterSpacing: '0.5px'
+                  }}>
+                    <Zap size={13} fill="#FDE047" color="#FDE047" />
+                    OFERTAS RELÂMPAGO
+                  </span>
+                  <span style={{ fontSize: '0.78rem', color: '#93C5FD', fontWeight: 700 }}>
+                    Atualizadas de hora em hora
+                  </span>
+                </div>
+
+                <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+                  PISCOU <span style={{ color: '#FDE047' }}>PERDEU</span>
+                </h2>
+                <p style={{ fontSize: '0.84rem', color: '#E2E8F0', margin: '0.35rem 0 0 0' }}>
+                  Preços promocionais válidos enquanto durar o estoque com retirada em 1h.
+                </p>
+              </div>
+
+              {/* Lado Direito: Temporizador & Botão Fechar */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                <div style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                  border: '1px solid rgba(253, 224, 71, 0.45)',
+                  borderRadius: '14px',
+                  padding: '0.6rem 1rem',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '0.68rem', color: '#CBD5E1', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.2rem' }}>
+                    Renovação em
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '1.25rem', fontWeight: 900, color: '#FDE047', fontFamily: 'monospace' }}>
+                    <span>{flashH}h</span>
+                    <span>:</span>
+                    <span>{flashM}m</span>
+                    <span>:</span>
+                    <span>{flashS}s</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsPiscouPerdeuModalOpen(false)}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                    borderRadius: '50%',
+                    width: '38px',
+                    height: '38px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                    e.currentTarget.style.transform = 'scale(1.08)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  title="Fechar modal"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Filtros de Categoria dentro do Modal */}
+            <div style={{
+              padding: '0.85rem 1.75rem',
+              backgroundColor: '#F8FAFC',
+              borderBottom: '1px solid #E2E8F0',
+              display: 'flex',
+              gap: '0.6rem',
+              alignItems: 'center',
+              overflowX: 'auto'
+            }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#64748B', marginRight: '0.3rem', textTransform: 'uppercase' }}>
+                Filtrar:
+              </span>
+              {[
+                { id: 'all', label: 'Todas as Ofertas (8)' },
+                { id: 'medicamentos', label: 'Medicamentos (3)' },
+                { id: 'higiene', label: 'Higiene & Cuidados (2)' },
+                { id: 'dermo', label: 'Dermocosméticos (2)' },
+                { id: 'suplementos', label: 'Suplementos (1)' }
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setPiscouCategory(cat.id)}
+                  style={{
+                    padding: '0.35rem 0.85rem',
+                    borderRadius: '999px',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    border: piscouCategory === cat.id ? '1px solid #001FD8' : '1px solid #CBD5E1',
+                    backgroundColor: piscouCategory === cat.id ? '#001FD8' : '#FFFFFF',
+                    color: piscouCategory === cat.id ? '#FFFFFF' : '#475569',
+                    transition: 'all 0.15s ease',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Grid com Todos os Produtos Relâmpago */}
+            <div style={{
+              padding: '1.5rem 1.75rem',
+              overflowY: 'auto',
+              flex: 1,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(215px, 1fr))',
+              gap: '1.25rem',
+              backgroundColor: '#FFFFFF'
+            }}>
+              {PISCOU_PERDEU_ITEMS
+                .filter((p) => piscouCategory === 'all' || p.category === piscouCategory)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '16px',
+                      padding: '1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      backgroundColor: '#FFFFFF',
+                      transition: 'all 0.2s ease',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#001FD8';
+                      e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 31, 216, 0.12)';
+                      e.currentTarget.style.transform = 'translateY(-3px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#E2E8F0';
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    {/* Badge de Desconto & Demanda */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                      <span style={{
+                        backgroundColor: '#FEF2F2',
+                        color: '#DC2626',
+                        border: '1px solid #FECACA',
+                        fontWeight: 900,
+                        fontSize: '0.72rem',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '6px'
+                      }}>
+                        -{item.discountPct}% OFF
+                      </span>
+
+                      <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#D97706', backgroundColor: '#FEF3C7', padding: '0.15rem 0.45rem', borderRadius: '4px' }}>
+                        {item.badge}
+                      </span>
+                    </div>
+
+                    {/* Foto Limpa do Packshot */}
+                    <div style={{
+                      height: '110px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: '0.75rem'
+                    }}>
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          maxHeight: '105px',
+                          maxWidth: '100%',
+                          objectFit: 'contain'
+                        }}
+                      />
+                    </div>
+
+                    {/* Informações */}
+                    <div>
+                      <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#001FD8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        {item.brand}
+                      </div>
+                      <h4 style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0F172A', minHeight: '2.4rem', lineHeight: 1.3, margin: '0.2rem 0 0.5rem 0' }}>
+                        {item.name}
+                      </h4>
+
+                      {/* Barra de Estoque Urgente */}
+                      <div style={{ marginBottom: '0.65rem', backgroundColor: '#F8FAFC', padding: '0.4rem 0.55rem', borderRadius: '8px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', fontWeight: 800, color: '#DC2626', marginBottom: '0.25rem' }}>
+                          <span>Restam apenas {item.stockLeft} un</span>
+                          <span>{item.soldPercent}% vendido</span>
+                        </div>
+                        <div style={{ width: '100%', height: '5px', backgroundColor: '#E2E8F0', borderRadius: '999px', overflow: 'hidden' }}>
+                          <div style={{ width: `${item.soldPercent}%`, height: '100%', backgroundColor: '#DC2626', borderRadius: '999px' }} />
+                        </div>
+                      </div>
+
+                      {/* Preços */}
+                      <div style={{ marginBottom: '0.85rem' }}>
+                        <div style={{ fontSize: '0.72rem', color: '#94A3B8', textDecoration: 'line-through' }}>
+                          De R$ {item.originalPrice.toFixed(2).replace('.', ',')}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+                          <span style={{ fontSize: '1.45rem', fontWeight: 900, color: '#001FD8' }}>
+                            R$ {item.flashPrice.toFixed(2).replace('.', ',')}
+                          </span>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B' }}>
+                            cada
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Botão de Adicionar à Sacola */}
+                    <button
+                      type="button"
+                      onClick={(e) => handleAddPiscouToCart(item, e)}
+                      style={{
+                        width: '100%',
+                        backgroundColor: addedFlashId === item.id ? '#16A34A' : '#001FD8',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '10px',
+                        padding: '0.65rem 0.75rem',
+                        fontSize: '0.84rem',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.45rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        boxShadow: '0 4px 12px rgba(0, 31, 216, 0.25)'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (addedFlashId !== item.id) e.currentTarget.style.backgroundColor = '#00159E';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (addedFlashId !== item.id) e.currentTarget.style.backgroundColor = '#001FD8';
+                      }}
+                    >
+                      {addedFlashId === item.id ? (
+                        <>
+                          <Check size={16} />
+                          <span>Adicionado!</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag size={16} />
+                          <span>Adicionar à Sacola</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ))}
+            </div>
+
+            {/* Footer do Modal */}
+            <div style={{
+              padding: '1rem 2rem',
+              backgroundColor: '#F8FAFC',
+              borderTop: '1px solid #E2E8F0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '1rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#475569', fontSize: '0.82rem' }}>
+                <Truck size={18} color="#001FD8" />
+                <span>
+                  <strong>Retire Grátis em até 1h</strong> na sua loja Pague Menos mais próxima ou receba via Entrega Expressa.
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsPiscouPerdeuModalOpen(false)}
+                  style={{
+                    padding: '0.6rem 1.25rem',
+                    borderRadius: '10px',
+                    border: '1px solid #CBD5E1',
+                    backgroundColor: '#FFFFFF',
+                    color: '#334155',
+                    fontSize: '0.84rem',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Continuar Comprando
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsPiscouPerdeuModalOpen(false);
+                    onOpenCart();
+                  }}
+                  style={{
+                    padding: '0.6rem 1.4rem',
+                    borderRadius: '10px',
+                    border: 'none',
+                    backgroundColor: '#001FD8',
+                    color: '#FFFFFF',
+                    fontSize: '0.84rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    boxShadow: '0 4px 12px rgba(0, 31, 216, 0.3)'
+                  }}
+                >
+                  <ShoppingBag size={16} />
+                  <span>Ver Minha Sacola</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

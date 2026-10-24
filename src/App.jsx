@@ -324,7 +324,7 @@ export function App() {
             />
           )}
 
-          {/* Rodapé Oficial FarmaViva */}
+          {/* Rodapé Oficial Pague Menos */}
           <DesktopFooter />
 
           {/* Chatbot Flutuante Interativo (Farmacêutica IA) no Site Desktop */}
@@ -390,7 +390,7 @@ export function App() {
         onConfirmPhoto={handleCameraPhotoConfirmed}
       />
 
-      {/* Modal de Nossas Lojas FarmaViva */}
+      {/* Modal de Nossas Lojas Pague Menos */}
       <StoresModal
         isOpen={isStoresModalOpen}
         onClose={() => setIsStoresModalOpen(false)}

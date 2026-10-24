@@ -1,4 +1,4 @@
-// Motor de IA Commerce da Farmácia FarmaViva
+// Motor de IA Commerce da Farmácia Pague Menos
 // Converte linguagem natural e intenções de compra em seleções estruturadas do catálogo,
 // aplicando regras clínicas de segurança, restrição orçamentária e otimização por genéricos.
 
@@ -170,7 +170,7 @@ export function runAiCommerceEngine({
         intent: attachIntent,
         detectedTitle: attachIntent === 'generic' ? 'Busca de Genérico Equivalente' : (attachIntent === 'repurchase' ? 'Recompra do Medicamento' : 'Documento Anexado'),
         badgeText: attachIntent === 'generic' ? 'Genérico Equivalente' : 'Anexo Analisado',
-        actionText: 'Medicamento processado pelo catálogo oficial FarmaViva'
+        actionText: 'Medicamento processado pelo catálogo oficial Pague Menos'
       };
     }
   }
@@ -378,16 +378,16 @@ export function runAiCommerceEngine({
     journeyTitle = 'Cesta de Alívio Gripal & Suporte Imunológico';
     rationale = 'Abordagem combinada: alívio dos sintomas clássicos (dor no corpo e congestão com higienização nasal estéril) somado ao suporte de Vitamina C para reforço da resposta imunitária natural.';
   } else if (theme === 'recompra') {
-    journeyTitle = preferGenerics ? 'Recompra Otimizada com Genéricos FarmaViva' : 'Sua Cesta de Cuidados Habitual';
+    journeyTitle = preferGenerics ? 'Recompra Otimizada com Genéricos Pague Menos' : 'Sua Cesta de Cuidados Habitual';
     rationale = preferGenerics
       ? 'Identificamos seus produtos habituais e substituímos pelas versões genéricas homologadas pela ANVISA (mesma molécula e eficácia comprovada), reduzindo o valor final significativamente.'
-      : 'Reunimos seus itens mais frequentes para facilitar sua reposição rápida em 1 clique com os melhores descontos do Clube FarmaViva.';
+      : 'Reunimos seus itens mais frequentes para facilitar sua reposição rápida em 1 clique com os melhores descontos do Sempre Bem Pague Menos.';
   } else if (theme === 'baby') {
     journeyTitle = 'Cuidado Diário Mamãe & Bebê';
     rationale = 'Seleção dermatologicamente testada e segura para a pele sensível do recém-nascido e da criança, focando em proteção prolongada e prevenção ativa de assaduras.';
   } else {
     journeyTitle = 'Seleção Personalizada de Farmácia';
-    rationale = 'Produtos selecionados para atender sua necessidade diária de saúde e bem-estar, com máxima conveniência e garantia de procedência Farmácia FarmaViva.';
+    rationale = 'Produtos selecionados para atender sua necessidade diária de saúde e bem-estar, com máxima conveniência e garantia de procedência Farmácia Pague Menos.';
   }
 
   // Personalização se houver análise de anexo
@@ -397,7 +397,7 @@ export function runAiCommerceEngine({
       rationale = `Analisamos a imagem do seu medicamento (${attachedAnalysis.detectedMedication}). Encontramos o Genérico Equivalente homologado pela ANVISA (${attachedAnalysis.equivalentGeneric}) com economia de ${attachedAnalysis.savingsPercent}%, garantindo idêntica eficácia e princípio ativo por uma fração do preço.`;
     } else if (attachedAnalysis.intent === 'repurchase') {
       journeyTitle = 'Recompra Rápida do Medicamento Fotografado';
-      rationale = `Identificamos o medicamento (${attachedAnalysis.detectedMedication}) na foto anexada e preparamos sua reposição direta com os maiores descontos do Clube FarmaViva.`;
+      rationale = `Identificamos o medicamento (${attachedAnalysis.detectedMedication}) na foto anexada e preparamos sua reposição direta com os maiores descontos do Sempre Bem Pague Menos.`;
     } else if (attachedAnalysis.intent === 'prescription') {
       journeyTitle = 'Receita Médica Digital Validada com Sucesso';
       rationale = `Receita digital protocolada (CFM / ICP-Brasil). Verificamos a autenticidade da prescrição emitida pelo ${attachedAnalysis.doctor} e liberamos a dispensação dos medicamentos prescritos com total segurança sanitária.`;
@@ -418,7 +418,7 @@ export function runAiCommerceEngine({
     prescriptionPreValidated: isPreValidated,
     rxItems: rxItems.map(i => i.name),
     disclaimer: 'SE PERSISTIREM OS SINTOMAS, O MÉDICO DEVERÁ SER CONSULTADO. MEDICAMENTO SOB CONTROLE SANITÁRIO.',
-    pharmacistSupervision: 'Seleção orientada por inteligência de dados com supervisão técnica farmacêutica Farmácia FarmaViva (CRF/SP ativo).',
+    pharmacistSupervision: 'Seleção orientada por inteligência de dados com supervisão técnica farmacêutica Farmácia Pague Menos (CRF/SP ativo).',
     warningText: isPreValidated
       ? 'Receita médica digital homologada e validada! Compra de medicamentos liberada.'
       : (hasRx

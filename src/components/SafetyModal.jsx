@@ -75,7 +75,7 @@ export function SafetyModal({ isOpen, onClose }) {
             color: '#1E40AF'
           }}>
             <h4 style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <Scale size={16} /> O Compromisso FarmaViva de IA Responsável
+              <Scale size={16} /> O Compromisso Pague Menos de IA Responsável
             </h4>
             <p style={{ fontSize: '0.84rem', lineHeight: 1.45 }}>
               Nossa inteligência artificial não substitui a consulta médica nem o diagnóstico clínico. Ela atua como um assistente consultivo para facilitar a navegação em produtos de consumo livre, autocuidado responsável e otimização financeira com genéricos de qualidade comprovada.

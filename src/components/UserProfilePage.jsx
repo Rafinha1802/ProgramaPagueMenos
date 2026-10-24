@@ -55,7 +55,7 @@ export function UserProfilePage({
     gender: 'Feminino'
   });
 
-  // Histórico completo de pedidos do cliente FarmaViva
+  // Histórico completo de pedidos do cliente Pague Menos
   const ordersHistory = [
     {
       id: 'FV-98421',
@@ -90,8 +90,8 @@ export function UserProfilePage({
         },
         {
           id: 'prod-14',
-          name: 'Vitamina C 1g + Zinco 10mg FarmaViva 30 Efervescentes',
-          brand: 'FarmaViva',
+          name: 'Vitamina C 1g + Zinco 10mg Pague Menos 30 Efervescentes',
+          brand: 'Pague Menos',
           quantity: 1,
           price: 19.90,
           image: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=200&q=80'
@@ -107,7 +107,7 @@ export function UserProfilePage({
       statusBg: '#DCFCE7',
       deliveryType: 'Retirada Express em Loja (Loja Jardins)',
       paymentMethod: 'Cartão de Crédito Mastercard (2x)',
-      address: 'Retirado na Loja FarmaViva - Rua Augusta, 1420',
+      address: 'Retirado na Loja Pague Menos - Rua Augusta, 1420',
       total: 201.70,
       discount: 22.00,
       subtotal: 223.70,
@@ -392,7 +392,7 @@ export function UserProfilePage({
                     border: '1px solid rgba(255, 255, 255, 0.4)'
                   }}>
                     <Award size={13} color="#78350F" strokeWidth={2.5} />
-                    <span>Cliente Ouro FarmaViva</span>
+                    <span>Cliente Ouro Pague Menos</span>
                   </span>
                 </div>
 
@@ -506,7 +506,7 @@ export function UserProfilePage({
                   R$ 184
                 </div>
                 <div style={{ fontSize: '0.68rem', color: '#BAE6FD', fontWeight: 600 }}>
-                  Clube FarmaViva
+                  Sempre Bem Pague Menos
                 </div>
               </div>
 
@@ -1378,7 +1378,7 @@ export function UserProfilePage({
                 </div>
                 <div>
                   <strong style={{ fontSize: '0.9rem', color: '#0F172A' }}>Saiu para Entrega Express</strong>
-                  <div style={{ fontSize: '0.76rem', color: '#64748B' }}>Motoboy FarmaViva em rota rápida</div>
+                  <div style={{ fontSize: '0.76rem', color: '#64748B' }}>Motoboy Pague Menos em rota rápida</div>
                 </div>
               </div>
 
