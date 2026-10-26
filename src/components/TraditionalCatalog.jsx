@@ -1,22 +1,27 @@
 import React from 'react';
 import { ShoppingBag, Star, ShieldCheck, Heart, AlertCircle, Sparkles } from 'lucide-react';
-import { CATALOG } from '../data/catalog';
 
 export function TraditionalCatalog({
   activeCategory,
   searchQuery,
   onAddToCart,
-  onOpenAiGuide
+  onOpenAiGuide,
+  products = []
 }) {
+  const catalogList = Array.isArray(products) ? products : [];
+
   // Filtragem combinada por categoria e termo de busca tradicional
-  const filteredProducts = CATALOG.filter((item) => {
+  const filteredProducts = catalogList.filter((item) => {
     const matchesCategory =
-      activeCategory === 'all' || item.category === activeCategory;
+      activeCategory === 'all' ||
+      item.category === activeCategory ||
+      item.categoryLabel === activeCategory ||
+      (item.categoria && item.categoria.toLowerCase().includes(activeCategory.toLowerCase()));
+
     const matchesSearch =
       !searchQuery ||
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+      item.brand.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesCategory && matchesSearch;
   });

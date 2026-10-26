@@ -14,15 +14,16 @@ import {
   MessageSquare,
   X
 } from 'lucide-react';
-import { CATALOG } from '../data/catalog';
 
 export function AiGuidedExperience({
   recommendation,
   onUpdateEngine,
   onAddToCart,
   onAddBatchToCart,
-  onCloseExperience
+  onCloseExperience,
+  products = []
 }) {
+  const catalogList = products && products.length > 0 ? products : [];
   const [alternativeSelectorId, setAlternativeSelectorId] = useState(null);
   const [customAddedMessage, setCustomAddedMessage] = useState(null);
   const [customInput, setCustomInput] = useState('');
@@ -47,7 +48,7 @@ export function AiGuidedExperience({
   // Troca individual de produto por substituto
   const handleSwapProduct = (currentProdId, replacementProdId) => {
     const newItems = recommendedItems.map((item) =>
-      item.id === currentProdId ? CATALOG.find((p) => p.id === replacementProdId) : item
+      item.id === currentProdId ? (catalogList.find((p) => String(p.id) === String(replacementProdId)) || item) : item
     ).filter(Boolean);
 
     onUpdateEngine({
@@ -513,7 +514,7 @@ export function AiGuidedExperience({
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
             {recommendedItems.map((product) => {
               const isGeneric = product.isGeneric;
-              const hasAlternative = product.genericEquivalentId || CATALOG.some((c) => c.category === product.category && c.id !== product.id);
+              const hasAlternative = product.genericEquivalentId || catalogList.some((c) => (c.category === product.category || c.categoryLabel === product.categoryLabel) && String(c.id) !== String(product.id));
 
               return (
                 <div
@@ -681,8 +682,8 @@ export function AiGuidedExperience({
                         Opções equivalentes no catálogo:
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                        {CATALOG
-                          .filter((c) => c.category === product.category && c.id !== product.id)
+                        {catalogList
+                          .filter((c) => (c.category === product.category || c.categoryLabel === product.categoryLabel) && String(c.id) !== String(product.id))
                           .slice(0, 2)
                           .map((alt) => (
                             <div

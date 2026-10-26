@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Search, ShoppingBag, MapPin, Sparkles, User, Store, Smartphone, 
-  HelpCircle, ChevronRight, Mic, Camera, X, ArrowRight, TrendingUp, Sparkle
+  HelpCircle, ChevronRight, Mic, Camera, X, ArrowRight, TrendingUp, Sparkle, Plus, LogOut
 } from 'lucide-react';
 
 export function Header({
@@ -18,16 +18,36 @@ export function Header({
   userSession,
   onOpenAuth,
   onOpenProfile,
+  onLogout,
   onGoHome,
   onOpenStoresModal,
   onOpenAppModal,
   onOpenHelpModal,
   onOpenCepModal,
   userLocationCep,
-  onOpenCamera
+  onOpenCamera,
+  backendStatus = null,
+  catalogProducts = [],
+  onAddToCart = null
 }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchContainerRef = useRef(null);
+
+  // Produtos que correspondem à digitação em tempo real no catálogo
+  const matchingProducts = React.useMemo(() => {
+    if (!searchQuery || searchQuery.trim().length < 2 || !Array.isArray(catalogProducts)) {
+      return [];
+    }
+    const q = searchQuery.toLowerCase().trim();
+    return catalogProducts
+      .filter((p) => {
+        const name = (p.name || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        const active = (p.activePrinciple || '').toLowerCase();
+        return name.includes(q) || cat.includes(q) || active.includes(q);
+      })
+      .slice(0, 4);
+  }, [searchQuery, catalogProducts]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -378,114 +398,243 @@ export function Header({
 
                 {/* Se o usuário já digitou algo, destacar ação de busca imediata com IA */}
                 {searchQuery && searchQuery.trim().length > 0 && (
-                  <div
-                    onClick={() => handleSelectQuery(searchQuery.trim())}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      backgroundColor: '#EFF6FF',
-                      border: '1.5px solid #BFDBFE',
-                      borderRadius: '12px',
-                      padding: '0.75rem 1rem',
-                      marginBottom: '0.9rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#DBEAFE';
-                      e.currentTarget.style.borderColor = '#001FD8';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#EFF6FF';
-                      e.currentTarget.style.borderColor = '#BFDBFE';
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <div style={{
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '8px',
-                        backgroundColor: '#001FD8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#FFFFFF'
-                      }}>
-                        <Sparkles size={16} color="#FDE047" />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0F172A' }}>
-                          Buscar com IA: <span style={{ color: '#001FD8' }}>"{searchQuery}"</span>
-                        </div>
-                        <div style={{ fontSize: '0.73rem', color: '#475569' }}>
-                          Analisar sintomas, medicamentos equivalentes e genéricos mais baratos
-                        </div>
-                      </div>
-                    </div>
-                    <span style={{
-                      fontSize: '0.78rem',
-                      fontWeight: 800,
-                      color: '#001FD8',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.25rem'
-                    }}>
-                      Consultar IA <ArrowRight size={14} />
-                    </span>
-                  </div>
-                )}
-
-                {/* Lista de Prompts Inteligentes Guiados */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '1rem' }}>
-                  {aiSmartPrompts.map((item, idx) => (
+                  <>
                     <div
-                      key={idx}
-                      onClick={() => handleSelectQuery(item.query)}
+                      onClick={() => handleSelectQuery(searchQuery.trim())}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '0.65rem 0.85rem',
+                        backgroundColor: '#EFF6FF',
+                        border: '1.5px solid #BFDBFE',
                         borderRadius: '12px',
+                        padding: '0.75rem 1rem',
+                        marginBottom: '0.85rem',
                         cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        backgroundColor: '#F8FAFC',
-                        border: '1px solid transparent'
+                        transition: 'all 0.15s ease'
                       }}
                       onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#DBEAFE';
+                        e.currentTarget.style.borderColor = '#001FD8';
+                      }}
+                      onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = '#EFF6FF';
                         e.currentTarget.style.borderColor = '#BFDBFE';
                       }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#F8FAFC';
-                        e.currentTarget.style.borderColor = 'transparent';
-                      }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <span style={{
-                          fontSize: '0.68rem',
-                          fontWeight: 700,
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: '6px',
-                          backgroundColor: '#E0E7FF',
-                          color: '#3730A3'
+                        <div style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          backgroundColor: '#001FD8',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#FFFFFF'
                         }}>
-                          {item.badge}
-                        </span>
+                          <Sparkles size={16} color="#FDE047" />
+                        </div>
                         <div>
-                          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A' }}>
-                            {item.query}
+                          <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0F172A' }}>
+                            Buscar com IA: <span style={{ color: '#001FD8' }}>"{searchQuery}"</span>
                           </div>
-                          <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
-                            {item.hint}
+                          <div style={{ fontSize: '0.73rem', color: '#475569' }}>
+                            Analisar sintomas, genéricos equivalentes e montar cesta inteligente
                           </div>
                         </div>
                       </div>
-                      <ArrowRight size={15} color="#001FD8" />
+                      <span style={{
+                        fontSize: '0.78rem',
+                        fontWeight: 800,
+                        color: '#001FD8',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem'
+                      }}>
+                        Consultar IA <ArrowRight size={14} />
+                      </span>
                     </div>
-                  ))}
-                </div>
+
+                    {/* Produtos correspondentes no catálogo em tempo real */}
+                    {matchingProducts.length > 0 ? (
+                      <div style={{ marginBottom: '0.9rem' }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '0.45rem',
+                          paddingLeft: '0.2rem'
+                        }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Produtos no Catálogo ({matchingProducts.length})
+                          </span>
+                          <span style={{ fontSize: '0.7rem', color: '#001FD8', fontWeight: 600 }}>
+                            Preço oficial sem simulação
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                          {matchingProducts.map((prod) => {
+                            const displayPrice = prod.price ?? prod.clubPrice ?? 0;
+                            return (
+                              <div
+                                key={prod.id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  padding: '0.5rem 0.75rem',
+                                  borderRadius: '10px',
+                                  backgroundColor: '#F8FAFC',
+                                  border: '1px solid #E2E8F0',
+                                  transition: 'all 0.15s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#F1F5F9';
+                                  e.currentTarget.style.borderColor = '#CBD5E1';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#F8FAFC';
+                                  e.currentTarget.style.borderColor = '#E2E8F0';
+                                }}
+                              >
+                                <div
+                                  onClick={() => handleSelectQuery(prod.name)}
+                                  style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1, cursor: 'pointer', minWidth: 0 }}
+                                >
+                                  <img
+                                    src={prod.image}
+                                    alt={prod.name}
+                                    style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '6px', backgroundColor: '#FFFFFF', padding: '2px', border: '1px solid #E2E8F0', flexShrink: 0 }}
+                                  />
+                                  <div style={{ minWidth: 0, paddingRight: '0.5rem' }}>
+                                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                      {prod.name}
+                                    </div>
+                                    <div style={{ fontSize: '0.7rem', color: '#64748B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                      {prod.category} {prod.activePrinciple ? `• ${prod.activePrinciple}` : ''}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+                                  <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#E30613' }}>
+                                      R$ {displayPrice.toFixed(2).replace('.', ',')}
+                                    </div>
+                                    {prod.clubPrice && prod.clubPrice < prod.price && (
+                                      <div style={{ fontSize: '0.65rem', color: '#001FD8', fontWeight: 700 }}>
+                                        Clube: R$ {prod.clubPrice.toFixed(2).replace('.', ',')}
+                                      </div>
+                                    )}
+                                  </div>
+                                  {onAddToCart && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onAddToCart(prod);
+                                      }}
+                                      style={{
+                                        backgroundColor: '#001FD8',
+                                        color: '#FFFFFF',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        padding: '0.35rem 0.65rem',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem',
+                                        transition: 'transform 0.15s ease'
+                                      }}
+                                      onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                                      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                      title="Adicionar à sacola"
+                                    >
+                                      <Plus size={12} />
+                                      <span>Adicionar</span>
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{
+                        padding: '0.6rem 0.85rem',
+                        backgroundColor: '#F8FAFC',
+                        borderRadius: '10px',
+                        border: '1px dashed #CBD5E1',
+                        fontSize: '0.74rem',
+                        color: '#64748B',
+                        marginBottom: '0.9rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem'
+                      }}>
+                        <Sparkles size={14} color="#001FD8" />
+                        <span>Nenhum nome exato no estoque imediato. A IA Farmacêutica acima encontra princípios ativos, dosagens e equivalentes!</span>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Lista de Prompts Inteligentes Guiados (quando busca vazia) */}
+                {(!searchQuery || searchQuery.trim().length === 0) && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '1rem' }}>
+                    {aiSmartPrompts.map((item, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => handleSelectQuery(item.query)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.65rem 0.85rem',
+                          borderRadius: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          backgroundColor: '#F8FAFC',
+                          border: '1px solid transparent'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#EFF6FF';
+                          e.currentTarget.style.borderColor = '#BFDBFE';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#F8FAFC';
+                          e.currentTarget.style.borderColor = 'transparent';
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                          <span style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '6px',
+                            backgroundColor: '#E0E7FF',
+                            color: '#3730A3'
+                          }}>
+                            {item.badge}
+                          </span>
+                          <div>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A' }}>
+                              {item.query}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                              {item.hint}
+                            </div>
+                          </div>
+                        </div>
+                        <ArrowRight size={15} color="#001FD8" />
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Termos Populares / Em Alta */}
                 <div style={{ marginBottom: '0.9rem' }}>
@@ -644,10 +793,41 @@ export function Header({
               </div>
               <div style={{ fontSize: '0.8rem', color: '#0F172A', lineHeight: 1.25 }}>
                 {userSession?.isLoggedIn ? (
-                  <>
-                    <span style={{ color: '#059669', fontSize: '0.72rem', fontWeight: 800 }}>Olá, {userSession.name?.split(' ')[0]}</span><br />
-                    <strong style={{ color: '#001FD8' }}>Minha Conta & Pedidos</strong>
-                  </>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                    <div>
+                      <span style={{ color: '#059669', fontSize: '0.72rem', fontWeight: 800 }}>Olá, {userSession.name?.split(' ')[0]}</span><br />
+                      <strong style={{ color: '#001FD8' }}>Minha Conta & Pedidos</strong>
+                    </div>
+                    {onLogout && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onLogout();
+                        }}
+                        title="Sair da sua conta"
+                        style={{
+                          backgroundColor: '#FEF2F2',
+                          color: '#DC2626',
+                          border: '1px solid #FECACA',
+                          borderRadius: '8px',
+                          padding: '0.22rem 0.55rem',
+                          fontSize: '0.72rem',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEE2E2'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
+                      >
+                        <LogOut size={12} />
+                        <span>Sair</span>
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   <>
                     <span style={{ color: '#64748B', fontSize: '0.72rem' }}>Bem-vindo!</span><br />

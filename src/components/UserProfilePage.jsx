@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchPrescriptionsBackend, fetchUserOrdersBackend, updateUserProfileBackend } from '../services/api';
 import {
   User,
   ShoppingBag,
@@ -42,6 +43,9 @@ export function UserProfilePage({
 }) {
   const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'profile', 'addresses', 'payments', 'prescriptions', 'alerts'
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState(null);
+  const [realOrders, setRealOrders] = useState([]);
+  const [backendPrescriptions, setBackendPrescriptions] = useState([]);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [selectedOrderForNFe, setSelectedOrderForNFe] = useState(null);
   const [orderSearchTerm, setOrderSearchTerm] = useState('');
 
@@ -51,9 +55,44 @@ export function UserProfilePage({
     email: userSession?.email || 'rafaella.guedes@email.com',
     cpf: userSession?.cpf || '458.912.384-12',
     phone: userSession?.phone || '(11) 98765-4321',
-    birthDate: '14/08/1994',
+    birthDate: userSession?.birthDate || '14/08/1994',
     gender: 'Feminino'
   });
+
+
+  // Carrega pedidos e receitas reais salvas no backend
+  useEffect(() => {
+    async function loadBackendData() {
+      try {
+        const uid = userSession?.id || 'user_1';
+        const [ordersData, prescData] = await Promise.all([
+          fetchUserOrdersBackend({ userId: uid, token: userSession?.token }),
+          fetchPrescriptionsBackend({ userId: uid, token: userSession?.token })
+        ]);
+        if (Array.isArray(ordersData) && ordersData.length > 0) {
+          setRealOrders(ordersData);
+        }
+        if (Array.isArray(prescData) && prescData.length > 0) {
+          setBackendPrescriptions(prescData);
+        }
+      } catch (err) {
+        console.warn('Erro ao buscar dados do backend no perfil:', err);
+      }
+    }
+    loadBackendData();
+  }, [userSession]);
+
+  useEffect(() => {
+    if (userSession && userSession.isLoggedIn) {
+      setFormData((prev) => ({
+        ...prev,
+        name: userSession.name || prev.name,
+        email: userSession.email || prev.email,
+        cpf: userSession.cpf || prev.cpf,
+        phone: userSession.phone || prev.phone
+      }));
+    }
+  }, [userSession]);
 
   // Histórico completo de pedidos do cliente Pague Menos
   const ordersHistory = [
@@ -73,28 +112,28 @@ export function UserProfilePage({
       freight: 0.00,
       items: [
         {
-          id: 'pm-nivea-sun',
-          name: 'Protetor Solar Nivea Sun Protect & Toque Seco FPS50 200ml',
+          id: '57259',
+          name: 'Protetor Solar Nivea Sun Protect & Toque Seco FPS50 Spray 200ml',
           brand: 'NIVEA',
           quantity: 1,
-          price: 34.90,
-          image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=200&q=80'
+          price: 97.99,
+          image: '/products/nivea-sun-fps50.jpg'
         },
         {
-          id: 'prod-07',
-          name: 'Dipirona Monoidratada 500mg/ml Gotas 20ml - EMS Genérico',
-          brand: 'EMS',
+          id: '18537',
+          name: 'Dipirona Monoidratada 500mg 10 Comprimidos Genérico EMS',
+          brand: 'EMS GENÉRICO',
           quantity: 2,
-          price: 8.90,
-          image: 'https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&w=200&q=80'
+          price: 3.49,
+          image: '/products/dipirona-ems.jpg'
         },
         {
-          id: 'prod-14',
-          name: 'Vitamina C 1g + Zinco 10mg Pague Menos 30 Efervescentes',
-          brand: 'Pague Menos',
+          id: '46533',
+          name: 'Solução Fisiológica Dauf Pro Soro 0,9% 500ml',
+          brand: 'DAUF',
           quantity: 1,
-          price: 19.90,
-          image: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=200&q=80'
+          price: 8.99,
+          image: '/products/soro-dauf.jpg'
         }
       ]
     },
@@ -108,26 +147,26 @@ export function UserProfilePage({
       deliveryType: 'Retirada Express em Loja (Loja Jardins)',
       paymentMethod: 'Cartão de Crédito Mastercard (2x)',
       address: 'Retirado na Loja Pague Menos - Rua Augusta, 1420',
-      total: 201.70,
-      discount: 22.00,
-      subtotal: 223.70,
+      total: 68.97,
+      discount: 0.00,
+      subtotal: 68.97,
       freight: 0.00,
       items: [
         {
-          id: 'pm-aptanutri',
-          name: 'Fórmula Infantil Aptanutri Profutura 3 DHA ARA de 1 a 3 anos 800g',
-          brand: 'APTANUTRI',
+          id: '183582',
+          name: 'Gel Desodorante Antitranspirante Clinical Strength Secret 45g',
+          brand: 'SECRET',
           quantity: 2,
-          price: 94.90,
-          image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=200&q=80'
+          price: 14.99,
+          image: '/products/secret-clinical.jpg'
         },
         {
-          id: 'pm-evercare-disco',
-          name: 'Algodão em Discos 100% Puro Dupla Face 100 un - Ever Care',
-          brand: 'Ever Care',
+          id: '94266',
+          name: 'Kit Shampoo Pantene Pro-V Miracles Colágeno 300ml + Condicionador 150ml',
+          brand: 'PANTENE',
           quantity: 1,
-          price: 11.90,
-          image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=200&q=80'
+          price: 38.99,
+          image: '/products/pantene-kit.jpg'
         }
       ]
     },
@@ -141,26 +180,26 @@ export function UserProfilePage({
       deliveryType: 'Entrega Convencional no Mesmo Dia',
       paymentMethod: 'Cartão de Crédito Visa (1x)',
       address: 'Av. Paulista, 1578, Apto 82 - Bela Vista, São Paulo - SP',
-      total: 61.80,
-      discount: 10.00,
-      subtotal: 71.80,
+      total: 16.48,
+      discount: 0.00,
+      subtotal: 16.48,
       freight: 0.00,
       items: [
         {
-          id: 'prod-08',
-          name: 'Dorflex 36 Comprimidos (Dipirona + Orfenadrina + Cafeína)',
-          brand: 'Sanofi',
+          id: '102469',
+          name: 'Dorflex MAX Analgésico e Relaxante Muscular 4 Comprimidos',
+          brand: 'SANOFI',
           quantity: 1,
-          price: 27.90,
-          image: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=200&q=80'
+          price: 8.99,
+          image: '/products/dorflex.jpg'
         },
         {
-          id: 'prod-06',
-          name: 'Neosaldina 30 Drágeas (Dipirona + Isometepteno + Cafeína)',
-          brand: 'Cosmed',
+          id: '94154',
+          name: 'Buscopan Composto 10mg + 500mg 4 Comprimidos Revestidos',
+          brand: 'BOEHRINGER',
           quantity: 1,
-          price: 33.90,
-          image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=200&q=80'
+          price: 7.49,
+          image: '/products/buscopan.jpg'
         }
       ]
     },
@@ -174,26 +213,26 @@ export function UserProfilePage({
       deliveryType: 'Entrega Turbo Express',
       paymentMethod: 'Pix à Vista',
       address: 'Av. Paulista, 1578, Apto 82 - Bela Vista, São Paulo - SP',
-      total: 114.80,
-      discount: 18.00,
-      subtotal: 132.80,
+      total: 13.23,
+      discount: 0.00,
+      subtotal: 13.23,
       freight: 0.00,
       items: [
         {
-          id: 'prod-04',
-          name: 'Loção Facial Hidratante CeraVe 52ml',
-          brand: 'CeraVe',
+          id: '104427',
+          name: 'Protetor Labial Dauf Manteiga De Cacau Fps15 3,3 G',
+          brand: 'DAUF',
           quantity: 1,
-          price: 64.90,
-          image: 'https://images.unsplash.com/photo-1608248597359-009133612803?auto=format&fit=crop&w=200&q=80'
+          price: 4.24,
+          image: '/products/protetor-labial-dauf.jpg'
         },
         {
-          id: 'prod-01',
-          name: 'Gel de Limpeza Facial Actine Darrow 140g',
-          brand: 'Darrow',
+          id: '46533',
+          name: 'Solução Fisiológica Dauf Pro Soro 0,9% 500ml',
+          brand: 'DAUF',
           quantity: 1,
-          price: 49.90,
-          image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=200&q=80'
+          price: 8.99,
+          image: '/products/soro-dauf.jpg'
         }
       ]
     }
@@ -225,7 +264,8 @@ export function UserProfilePage({
   };
 
   // Filtragem dos pedidos por busca
-  const filteredOrders = ordersHistory.filter((order) => {
+  const activeOrdersList = realOrders.length > 0 ? realOrders : ordersHistory;
+  const filteredOrders = activeOrdersList.filter((order) => {
     const term = orderSearchTerm.toLowerCase();
     return (
       order.id.toLowerCase().includes(term) ||
@@ -617,7 +657,7 @@ export function UserProfilePage({
                     marginLeft: '0.2rem',
                     border: isActive ? '1px solid rgba(255,255,255,0.4)' : '1px solid #BFDBFE'
                   }}>
-                    {ordersHistory.length}
+                    {activeOrdersList.length}
                   </span>
                 )}
               </button>

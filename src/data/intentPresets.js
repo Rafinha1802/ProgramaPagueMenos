@@ -1,4 +1,4 @@
-// Presets de Intenção e Jornadas Rápidas para a Farmácia Pague Menos
+// Presets de Intenção e Jornadas Rápidas com IDs reais do catálogo back_PagueMenos
 
 export const INTENT_PRESETS = [
   {
@@ -11,25 +11,25 @@ export const INTENT_PRESETS = [
         id: 'kit-pele-dermo',
         label: 'Kit Proteção Solar & Toque Seco',
         prompt: 'Monte um kit de proteção solar com toque seco e higiene facial para o dia a dia',
-        budget: 95,
-        targetProductIds: ['pm-nivea-sun', 'prod-01', 'pm-secret-clinical'],
-        badge: 'Super Oferta'
+        budget: 150,
+        targetProductIds: ['57259', '183582', '138889'],
+        badge: 'Mais Pedido'
       },
       {
         id: 'kit-viagem-socorros',
         label: 'Kit Primeiros Socorros & Alívio Rápido',
-        prompt: 'Preciso de um kit de primeiros socorros para viagem: curativos, alívio de dor de cabeça e febre',
+        prompt: 'Preciso de um kit de primeiros socorros para viagem: soro, alívio de dor e congestão nasal',
         budget: 45,
-        targetProductIds: ['prod-19', 'prod-07', 'prod-09'],
+        targetProductIds: ['46533', '18537', '18064'],
         badge: 'Essencial'
       },
       {
         id: 'kit-bebe-nutri',
-        label: 'Kit Nutrição & Cuidado Infantil',
-        prompt: 'Fórmula infantil e cuidados para bebê de 1 a 3 anos',
+        label: 'Kit Cuidados Infantis & Família',
+        prompt: 'Protetor solar infantil e cuidados familiares com qualidade Pague Menos',
         budget: 110,
-        targetProductIds: ['pm-aptanutri', 'prod-14'],
-        badge: 'Mamães e Bebês'
+        targetProductIds: ['57295', '46533'],
+        badge: 'Família'
       }
     ]
   },
@@ -42,25 +42,25 @@ export const INTENT_PRESETS = [
       {
         id: 'orcamento-50',
         label: 'Cesta Essencial até R$ 50',
-        prompt: 'Quero produtos essenciais de alívio de dores, relaxante muscular e curativo gastando no máximo 50 reais',
+        prompt: 'Quero produtos essenciais de alívio de dores, desodorante e soro gastando no máximo 50 reais',
         budget: 50,
-        targetProductIds: ['prod-07', 'prod-09', 'prod-19'],
+        targetProductIds: ['18537', '46533', '183582'],
         badge: 'Super Econômico'
       },
       {
         id: 'orcamento-80-dermo',
         label: 'Rotina Dermo & Beleza até R$ 80',
-        prompt: 'Quero protetor solar toque seco Nivea e desodorante clinical em super oferta até 80 reais',
+        prompt: 'Quero protetor solar toque seco Principia e desodorante clinical em super oferta até 80 reais',
         budget: 80,
-        targetProductIds: ['pm-nivea-sun', 'pm-secret-clinical'],
+        targetProductIds: ['138889', '183582'],
         badge: 'Mais Pedido'
       },
       {
         id: 'orcamento-100-familia',
         label: 'Cuidados Família até R$ 100',
-        prompt: 'Cesta familiar com vitaminas Pague Menos, desodorante e alívio de dor dentro de 100 reais',
+        prompt: 'Cesta familiar com protetor Nivea e itens essenciais dentro de 100 reais',
         budget: 100,
-        targetProductIds: ['prod-14', 'pm-nivea-men', 'prod-08', 'prod-07'],
+        targetProductIds: ['57295', '46533', '18537'],
         badge: 'Família'
       }
     ]
@@ -74,18 +74,17 @@ export const INTENT_PRESETS = [
       {
         id: 'repetir-otimizado',
         label: 'Repetir última cesta com Genéricos Pague Menos',
-        prompt: 'Quero repetir minha compra habitual de relaxante muscular, dor de cabeça e vitamina C, mas economizando com alternativas genéricas',
+        prompt: 'Quero repetir minha compra habitual de alívio de dor de cabeça, soro e desodorante economizando com genéricos',
         budget: 60,
-        targetProductIds: ['prod-07', 'prod-09', 'prod-14'],
-        comparisonOriginalIds: ['prod-06', 'prod-08', 'prod-10'],
-        badge: 'Economia de 52%'
+        targetProductIds: ['18537', '46533', '183582'],
+        badge: 'Economia Garantida'
       },
       {
         id: 'repetir-higiene',
         label: 'Reposição Mensal de Higiene & Proteção',
-        prompt: 'Repor protetor solar Nivea e desodorantes em oferta',
-        budget: 90,
-        targetProductIds: ['pm-nivea-sun', 'pm-nivea-men', 'pm-secret-clinical'],
+        prompt: 'Repor protetor solar toque seco e desodorantes em oferta',
+        budget: 120,
+        targetProductIds: ['57259', '183582'],
         badge: 'Ofertas Ativas'
       }
     ]

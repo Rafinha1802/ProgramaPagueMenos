@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "backend": "cd ../back_PagueMenos/PagueMenosBackend && python -m uvicorn app.main:app --reload --port 8000",
+    "backend:nested": "cd ../../back_PagueMenos/PagueMenosBackend && python -m uvicorn app.main:app --reload --port 8000",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
@@ -12,7 +14,8 @@
   "dependencies": {
     "lucide-react": "^1.54.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

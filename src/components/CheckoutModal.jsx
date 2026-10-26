@@ -33,11 +33,28 @@ export function CheckoutModal({ isOpen, onClose, cartItems, onCompleteOrder }) {
   const hasRxItem = cartItems.some((i) => i.product.requiresPrescription);
   const rxItems = cartItems.filter((i) => i.product.requiresPrescription);
 
-  const handleFinish = () => {
-    const randomOrder = 'FV-' + Math.floor(100000 + Math.random() * 900000);
-    setOrderNumber(randomOrder);
-    setIsSuccess(true);
-    onCompleteOrder();
+  const handleFinish = async () => {
+    const deliveryType = deliveryMethod === 'retire'
+      ? 'Retirada Express em Loja (Loja Jardins)'
+      : 'Entrega Turbo Express (45 min)';
+    const payment = paymentMethod === 'pix' ? 'Pix à Vista' : 'Cartão de Crédito';
+    const address = deliveryMethod === 'retire'
+      ? 'Retirado na Loja Pague Menos - Rua Augusta, 1420'
+      : 'Av. Paulista, 1578, Apto 82 - Bela Vista, São Paulo - SP';
+
+    try {
+      const res = await onCompleteOrder({
+        deliveryType,
+        paymentMethod: payment,
+        address
+      });
+      const orderNum = res?.pedido_id || ('FV-' + Math.floor(100000 + Math.random() * 900000));
+      setOrderNumber(orderNum);
+      setIsSuccess(true);
+    } catch (err) {
+      console.error('Falha ao processar checkout no backend:', err);
+      // Não transiciona para tela de sucesso se o checkout falhar
+    }
   };
 
   return (
