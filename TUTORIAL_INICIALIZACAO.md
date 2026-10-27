@@ -233,27 +233,61 @@ Caso queira rodar apenas um dos lados do sistema a partir da raiz:
 
 ---
 
-## ⚙️ 8. Variáveis de Ambiente (.env)
+## ⚙️ 8. Variáveis de Ambiente e Como Criar a Chave do Google Gemini (.env)
+
+### 🔑 Como Criar sua Chave Gratuita da API do Google Gemini
+
+O assistente utiliza o **Google Gemini** para gerar respostas conversacionais acolhedoras, empáticas e formatadas em Markdown com os dados reais do catálogo e supervisão de guardrails da ANVISA.
+
+Para gerar sua chave de API gratuita em menos de 2 minutos:
+
+1. **Acesse o Google AI Studio:**
+   👉 [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+2. **Faça login** com qualquer conta Google (Gmail).
+3. **Crie a chave:**
+   - Clique no botão azul **"Create API key"** (ou **"Get API key"**).
+   - Selecione a opção para criar a chave em um projeto novo ou existente (**"Create API key in new project"**).
+4. **Copie a chave gerada:**
+   - A chave começará com o prefixo `AIzaSy...`. Clique no botão de cópia.
+5. **Cole no arquivo `.env` do Backend:**
+   - Abra o arquivo `back_end/.env` no seu editor (ou copie de `back_end/.env.example`).
+   - Preencha os campos conforme abaixo:
+     ```env
+     # Provedor padrão
+     LLM_PROVIDER=gemini
+
+     # Modelo ativo recomendado (ultrarrápido e atualizado)
+     LLM_MODEL=gemini-3-flash-preview
+
+     # Sua chave de API gerada no Google AI Studio
+     GEMINI_API_KEY=AIzaSySuaChaveAqui...
+     ```
+
+> 🛡️ **Nota de Resiliência (Fallback Local Farmacêutico):**  
+> Se você **não** configurar a chave do Gemini, ou se a cota gratuita expirar temporariamente, o sistema **não quebra**! O backend automaticamente aciona o **Motor Generativo Local Farmacêutico**, que responde de forma dinâmica, inteligente e segura usando as regras farmacológicas e os dados do catálogo Parquet local.
+
+---
 
 ### Backend (`back_end/.env`)
-O backend funciona de maneira 100% autônoma e determinística mesmo sem chaves de API externas (usando o catálogo Parquet e motor de busca semântica local).
-
-Caso queira habilitar provedores de IA generativa em nuvem, configure:
+Exemplo completo das configurações do backend:
 ```env
-# Opcional: Chave para OpenAI (GPT-4o-mini)
-OPENAI_API_KEY=
+# Provedor de IA: 'gemini', 'groq', 'openai' ou 'auto'
+LLM_PROVIDER=gemini
+LLM_MODEL=gemini-3-flash-preview
+LLM_ENABLED=true
 
-# Opcional: Chave para Google Gemini
-GEMINI_API_KEY=
+# Chave do Google Gemini (obtenha em https://aistudio.google.com/app/apikey)
+GEMINI_API_KEY=AIzaSy...
 
-# Opcional: Chave para Groq (Llama 3.3)
+# Opcional: Provedores alternativos
 GROQ_API_KEY=
+OPENAI_API_KEY=
 
 # Origens CORS autorizadas
 CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 CATALOG_PATH=data/paguemenos_catalog.parquet
-LLM_PROVIDER=auto
-LLM_ENABLED=true
+EMBEDDING_BACKEND=tfidf
+LOG_LEVEL=info
 ```
 
 ### Frontend (`Front_end/.env`)

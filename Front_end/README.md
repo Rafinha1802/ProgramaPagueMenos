@@ -52,6 +52,7 @@ Front_end/
 │   │   ├── DesktopCheckoutPage.jsx     # Checkout em 3 etapas com múltiplos pagamentos
 │   │   ├── CameraCaptureModal.jsx      # Scanner de receitas e OCR com IA
 │   │   ├── ChatbotWidget.jsx           # Sofia, a farmacêutica digital inteligente
+│   │   ├── FormattedChatMessage.jsx    # Renderizador rico de Markdown, listas, negrito, preços e badges ANVISA
 │   │   ├── CartDrawer.jsx              # Gaveta lateral dinâmica do carrinho
 │   │   ├── UserProfilePage.jsx         # Perfil, histórico de pedidos e cofre de receitas
 │   │   └── Header.jsx / Footer.jsx     # Navegação superior e rodapé oficial

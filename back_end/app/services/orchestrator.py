@@ -54,7 +54,7 @@ class OrquestradorIA:
             return {
                 "tipo": "saudacao",
                 "mensagem": (
-                    "Olá! Tudo bem? Seja muito bem-vindo(a) à Pague Menos! 💊\n\n"
+                    "Olá! Tudo bem? Seja muito bem-vindo(a) à Pague Menos!\n\n"
                     "Sou a **Dra. Sofia**, sua Farmacêutica Virtual 24h. "
                     "Estou aqui para orientar você com total segurança, tirar dúvidas sobre medicamentos e ajudar a encontrar o melhor tratamento com a máxima economia de genéricos.\n\n"
                     "Como posso te ajudar hoje? Você pode me descrever seus sintomas (ex: *'estou com dor de cabeça e febre'*, *'azia e queimação'*), pedir um medicamento ou tirar dúvidas de saúde!"

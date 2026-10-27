@@ -4,6 +4,8 @@
 
 [![React 19](https://img.shields.io/badge/Frontend-React%2019%20%2B%20Vite%208-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI%200.115%2B%20%2B%20Python%203.11-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Google Gemini](https://img.shields.io/badge/AI-Google%20Gemini%20Flash-8E75C6?logo=google&logoColor=white)](https://aistudio.google.com/)
+[![Tests](https://img.shields.io/badge/Tests-31%20passing-brightgreen?logo=pytest&logoColor=white)](https://docs.pytest.org/)
 [![ANVISA Compliance](https://img.shields.io/badge/Compliance-ANVISA%20RDC%2020%2F2011%20%26%2044%2F2009-E30613?logo=shield)](https://www.gov.br/anvisa)
 [![LGPD](https://img.shields.io/badge/Privacidade-LGPD%20Lei%2013.709-001FD8)](http://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm)
 [![Licença](https://img.shields.io/badge/Projeto-Hacka%20Business%20REC'n'Play%202026-F59E0B)](https://recnplay.pe/)
@@ -26,7 +28,7 @@
    - [Gaveta Lateral de Carrinho (CartDrawer)](#4-gaveta-lateral-de-carrinho-slide-over-cartdrawerjsx)
    - [Área de Checkout e Pagamentos (DesktopCheckoutPage)](#5-área-de-checkout-e-pagamento-dedicada-desktopcheckoutpagejsx)
    - [Scanner e Leitor de Receitas (CameraCaptureModal)](#6-câmera--leitor-de-receitas-cameracapturemodaljsx)
-   - [Assistente Farmacêutica Sofia (ChatbotWidget)](#7-farmacêutica-digital-sofia-chatbotwidgetjsx)
+   - [Assistente Farmacêutica Sofia (ChatbotWidget & FormattedChatMessage)](#7-farmacêutica-digital-sofia-chatbotwidgetjsx--formattedchatmessagejsx)
    - [Área do Cliente e Cofre de Receitas (UserProfilePage)](#8-área-do-cliente-userprofilepagejsx)
 6. [Backend em Detalhe (FastAPI + Python 3.11)](#-backend-em-detalhe)
    - [Estrutura de Camadas e Repositórios](#estrutura-de-camadas-e-repositórios)
@@ -40,7 +42,7 @@
 12. [Câmera, Leitura de Receitas e OCR](#-câmera-leitura-de-receitas-e-ocr)
 13. [Estrutura Completa de Pastas](#-estrutura-completa-de-pastas)
 14. [Stack Técnica e Matriz de Dependências](#-stack-técnica-e-matriz-de-dependências)
-15. [Variáveis de Ambiente (.env)](#-variáveis-de-ambiente-env)
+15. [Variáveis de Ambiente e Chave do Google Gemini (.env)](#-variáveis-de-ambiente-e-chave-do-google-gemini)
 16. [Testes, Qualidade e Smoke Tests](#-testes-qualidade-e-smoke-tests)
 17. [Deploy em Produção (Vercel + Render / Docker)](#-deploy-em-produção-vercel--render--docker)
 18. [Segurança, Compliance Regulatório e LGPD](#-segurança-compliance-regulatório-e-lgpd)
@@ -272,10 +274,15 @@ O frontend foi desenvolvido com foco em estética premium, velocidade de respost
   - *Receita Médica / Exame:* Digitaliza receituários com carimbo/CRM e armazena a receita no Cofre Digital do cliente.
 - Fallback elegante para upload de arquivos de imagem ou PDF caso o usuário não possua webcam ativa.
 
-### 7. Farmacêutica Digital Sofia (`ChatbotWidget.jsx`)
-- Assistente virtual flutuante disponível 24 horas.
+### 7. Farmacêutica Digital Sofia (`ChatbotWidget.jsx` & `FormattedChatMessage.jsx`)
+- Assistente virtual inteligente flutuante conectada diretamente ao Google Gemini e RAG vetorial.
+- **Renderização Rica de Markdown (`FormattedChatMessage.jsx`):**
+  - Formatação nativa de negritos (`**texto**`), itálicos (`*texto*`), listas com marcadores (`-`, `*`) e numeração (`1.`, `2.`).
+  - Destaque automático de preços oficiais em Reais (`R$ XX,XX`) com badge farmacêutico de alta legibilidade.
+  - Card exclusivo de **Orientação de Saúde & ANVISA** para avisos e rodapés legais regulatórios.
+  - Alerta especial para medicamentos sob controle especial com fluxo de anexação de receita médica e foto da câmera.
+- Seleção e compra direta de produtos recomendados dentro da própria conversa com 1 clique.
 - Simulação de digitação em tempo real com sugestões contextuais.
-- Orientações de uso não prescritivas (posologia básica de bula, horários recomendados, orientações alimentares).
 
 ### 8. Área do Cliente (`UserProfilePage.jsx`)
 - Histórico completo de pedidos com rastreador visual de etapas (Confirmado → Em Separação → Saiu para Entrega → Entregue).
@@ -292,7 +299,7 @@ Construído sobre o framework **FastAPI**, o backend foi estruturado seguindo pr
 ### Estrutura de Camadas e Repositórios
 
 ```text
-back_PagueMenos/PagueMenosBackend/
+back_end/
 ├── app/
 │   ├── main.py                     # Inicialização da API, middlewares CORS e rotas
 │   ├── config.py                   # Configurações tipadas via pydantic-settings
@@ -770,38 +777,61 @@ ProgramaPagueMenos/ (Raiz do Monorepo)
 
 ---
 
-## 🔐 Variáveis de Ambiente (.env)
+## 🔐 Variáveis de Ambiente e Chave do Google Gemini
 
-### Backend (`back_PagueMenos/PagueMenosBackend/.env`)
+### 🔑 Como Criar sua Chave Gratuita da API do Google Gemini
+O assistente conversacional da Pague Menos é alimentado pelo **Google Gemini** para redigir respostas empáticas, detalhadas e estruturadas em Markdown:
+
+1. **Acesse o Google AI Studio:** [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+2. **Faça login** com sua conta Google e clique no botão azul **"Create API key"**.
+3. **Copie a chave gerada** (inicia com o prefixo `AIzaSy...`).
+4. **Cole no arquivo `back_end/.env`:**
+   ```env
+   # Provedor ativo
+   LLM_PROVIDER=gemini
+
+   # Modelo atualizado e de altíssima velocidade
+   LLM_MODEL=gemini-3-flash-preview
+
+   # Chave obtida no Google AI Studio
+   GEMINI_API_KEY=AIzaSy...
+   ```
+
+> 🛡️ **Resiliência Local Garantida:** Caso você não configure a chave do Gemini ou se a cota do Google expirar, o sistema **automaticamente aciona o Motor Generativo Local Farmacêutico**, respondendo com a mesma segurança ANVISA e precisão no catálogo oficial sem nunca travar.
+
+---
+
+### Backend (`back_end/.env`)
 ```bash
-# Habilita ou desabilita o modelo de linguagem externo
-# Se 'false', o sistema utiliza o motor determinístico seguro de fallback
-LLM_ENABLED=false
+# Provedor de LLM: 'gemini', 'groq', 'openai' ou 'auto'
+LLM_PROVIDER=gemini
+LLM_MODEL=gemini-3-flash-preview
+LLM_ENABLED=true
 
-# Chave de API da OpenAI (necessária apenas se LLM_ENABLED=true)
-OPENAI_API_KEY=sua_chave_aqui
+# Chave do Google Gemini (obtenha em https://aistudio.google.com/app/apikey)
+GEMINI_API_KEY=AIzaSy...
 
-# Modelo utilizado para redação
-LLM_MODEL=gpt-4o-mini
+# Provedores alternativos (opcionais)
+GROQ_API_KEY=
+OPENAI_API_KEY=
 
 # Backend de Embeddings para o RAG: 'auto', 'sentence' ou 'tfidf'
-# Recomendado 'tfidf' para inicialização instantânea sem necessidade de baixar PyTorch
 EMBEDDING_BACKEND=tfidf
 
 # Origens autorizadas para CORS (separadas por vírgula)
 CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://programa-pague-menos.vercel.app
 
-# Caminho do arquivo de catálogo Parquet
+# Caminho do catálogo Parquet
 CATALOG_PATH=data/paguemenos_catalog.parquet
 
 # Nível de logging
 LOG_LEVEL=info
 ```
 
-### Frontend (`PagueMenos/.env`)
+### Frontend (`Front_end/.env`)
 ```bash
-# Em desenvolvimento, mantenha vazio para utilizar o proxy do Vite (/api)
-# Em produção, aponte para a URL do seu backend no Render ou Railway
+# Em desenvolvimento local, deixe vazio para usar o proxy automático do Vite (/api)
+# Em produção, aponte para a URL do seu backend no Render
 VITE_API_URL=
 ```
 
@@ -811,19 +841,19 @@ VITE_API_URL=
 
 ### Testes Automatizados no Backend (Pytest)
 ```bash
-cd back_PagueMenos/PagueMenosBackend
-pytest -v
+cd back_end
+python -m pytest
 ```
-A suíte de testes valida:
-- Bloqueio determinístico da Camada 1 contra pedidos de dosagem infantil e diagnóstico.
-- Purga de medicamentos controlados sob retenção de receita na Camada 2.
+A suíte conta com **31 testes automatizados** cobrindo:
+- Bloqueio determinístico da Camada 1 contra pedidos de dosagem infantil, diagnósticos e prescrições.
+- Purga de medicamentos controlados sob retenção de receita na Camada 2 (RDC 20/2011 e RDC 44/2009).
 - Acurácia da busca vetorial RAG sobre o catálogo Parquet de 500 produtos.
 - Bloqueio anti-alucinação contra divergências de preço e SKUs fictícios.
-- Fluxos completos de autenticação, adição ao carrinho e checkout.
+- Fluxos completos de autenticação JWT, adição ao carrinho, pedidos e checkout.
 
 ### Smoke Tests Rápidos via Terminal (cURL)
 ```bash
-# 1. Testar bloqueio de dosagem (ANVISA - Camada 1)
+# 1. Testar bloqueio regulatório de dosagem (ANVISA - Camada 1)
 curl -X POST http://localhost:8000/chat \
   -H "Content-Type: application/json" \
   -d "{\"session_id\":\"smoke-1\",\"message\":\"qual a dosagem recomendada de dipirona infantil?\"}"
@@ -843,22 +873,22 @@ curl http://localhost:8000/health
 
 ### 1. Backend no Render
 1. Crie um novo **Web Service** no [Render](https://render.com).
-2. Conecte o repositório e aponte para o diretório `back_PagueMenos/PagueMenosBackend`.
+2. Conecte o repositório e aponte para o diretório `back_end`.
 3. Defina o Runtime como **Python 3**.
 4. Comando de build: `pip install -r requirements.txt`.
 5. Comando de start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-6. Configure as variáveis de ambiente (`EMBEDDING_BACKEND=tfidf`, `LLM_ENABLED=false`, `CORS_ORIGINS=https://sua-url-vercel.vercel.app`).
+6. Configure as variáveis de ambiente (`EMBEDDING_BACKEND=tfidf`, `LLM_PROVIDER=gemini`, `GEMINI_API_KEY=...`, `CORS_ORIGINS=https://sua-url-vercel.vercel.app`).
 
 ### 2. Frontend na Vercel
 1. Importe o repositório na [Vercel](https://vercel.com).
-2. Defina o Root Directory como `PagueMenos`.
+2. Defina o Root Directory como `Front_end`.
 3. Adicione a variável de ambiente:
    - `VITE_API_URL` = `https://seu-backend-paguemenos.onrender.com`
 4. Execute o Deploy.
 
 ### 3. Backend via Container Docker
 ```bash
-cd back_PagueMenos/PagueMenosBackend
+cd back_end
 docker build -t paguemenos-backend .
 docker run -d -p 8000:8000 --name paguemenos-api paguemenos-backend
 ```

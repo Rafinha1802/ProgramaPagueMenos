@@ -7,7 +7,7 @@
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-20%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-31%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/license-Private-red)](#-licença-e-confidencialidade)
 [![Status](https://img.shields.io/badge/status-MVP%20funcional-blue)](#-status-do-projeto)
 
@@ -165,9 +165,9 @@ resposta   fallback
 | **Validação** | Pydantic v2 | Contratos tipados, geração automática de JSON Schema |
 | **RAG** | sentence-transformers (`all-MiniLM-L6-v2`) | Embeddings semânticos, roda em CPU |
 | **Fallback RAG** | TF-IDF (scikit-learn) | Se o modelo não puder ser baixado, o servidor **ainda sobe** |
-| **LLM** | OpenAI (`gpt-4o-mini`) | Custo baixo, latência boa, trocável via env |
+| **LLM Multiprovedor** | Google Gemini (`gemini-3-flash-preview`), Groq, OpenAI ou Motor Local | Resposta empática com RAG e markdown, com fallback determinístico caso offline |
 | **Dados** | Apache Parquet (pyarrow) | 10x menor que CSV, tipos preservados |
-| **Testes** | pytest + httpx | Cobertura das 4 camadas de guardrail |
+| **Testes** | pytest + httpx (31 testes) | Cobertura total das 4 camadas de guardrail e endpoints |
 | **Deploy** | Render (backend) + Vercel (frontend) | Free tier suficiente para o MVP |
 
 ---
@@ -242,23 +242,36 @@ curl -X POST http://localhost:8000/chat \
 
 ---
 
-## 🔐 Variáveis de Ambiente
+## 🔐 Variáveis de Ambiente e Chave do Google Gemini
 
 Copie `.env.example` para `.env` e preencha. **Nunca** commite o `.env` real.
 
+### 🔑 Como Criar sua Chave Gratuita do Google Gemini
+1. Acesse o **Google AI Studio**: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+2. Faça login com sua conta Google e clique em **"Create API key"**.
+3. Copie a chave gerada (prefixo `AIzaSy...`).
+4. Cole no seu `back_end/.env`:
+   ```env
+   GEMINI_API_KEY=AIzaSySuaChaveAqui
+   LLM_PROVIDER=gemini
+   LLM_MODEL=gemini-3-flash-preview
+   LLM_ENABLED=true
+   ```
+
 | Variável | Padrão | Descrição |
 |---|---|---|
+| `GEMINI_API_KEY` | `(vazio)` | Chave do Google Gemini (**Recomendado**) — Obtenha em [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| `LLM_PROVIDER` | `gemini` | Provedor de LLM (`gemini`, `groq`, `openai`, `auto`) |
+| `LLM_MODEL` | `gemini-3-flash-preview` | Modelo ativo (`gemini-3-flash-preview` ou `gemini-2.0-flash`) |
+| `LLM_ENABLED` | `true` | `true` ativa o LLM externo; `false` usa o Motor Local Farmacêutico |
+| `GROQ_API_KEY` | `(vazio)` | Chave do Groq AI (Llama 3.3 70B - opcional) |
 | `OPENAI_API_KEY` | `(vazio)` | Chave OpenAI (opcional) |
-| `LLM_ENABLED` | `false` | `true` liga o LLM real; `false` usa fallback determinístico |
-| `LLM_MODEL` | `gpt-4o-mini` | Modelo OpenAI |
-| `CORS_ORIGINS` | `http://localhost:5173,https://programa-pague-menos.vercel.app` | Origens permitidas, separadas por vírgula; inclui o Vite local e o frontend publicado no Vercel |
-| `CATALOG_PATH` | `data/paguemenos_catalog.parquet` | Caminho do catálogo |
+| `CORS_ORIGINS` | `http://localhost:5173,...` | Origens permitidas, separadas por vírgula |
+| `CATALOG_PATH` | `data/paguemenos_catalog.parquet` | Caminho do catálogo Parquet oficial |
 | `EMBEDDING_BACKEND` | `auto` | `auto` / `tfidf` / `sentence` |
-| `LOG_LEVEL` | `info` | Nível de log |
+| `LOG_LEVEL` | `info` | Nível de logging da aplicação |
 
-> 💡 **Recomendação para a demo:** `LLM_ENABLED=false`.
-> O MVP funciona inteiro sem LLM, e a demonstração **não depende**
-> de a OpenAI estar de pé.
+> 🛡️ **Resiliência Farmacêutica Garantida:** Se você não tiver chave de API ou se a cota do Gemini terminar, o backend **não falha** nem devolve erro ao cliente. Ele aciona o **Motor Generativo Local Farmacêutico**, que gera a resposta semanticamente contextualizada utilizando a base farmacológica local.
 
 ---
 

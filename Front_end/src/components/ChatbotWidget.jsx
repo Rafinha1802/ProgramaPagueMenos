@@ -19,6 +19,7 @@ import {
   Minus
 } from 'lucide-react';
 import { runAiCommerceEngine, runAiCommerceEngineAsync } from '../services/aiCommerceEngine.js';
+import { FormattedChatMessage } from './FormattedChatMessage.jsx';
 
 export function ChatbotWidget({
   isOpen,
@@ -41,7 +42,7 @@ export function ChatbotWidget({
       id: 1,
       sender: 'bot',
       time: 'Agora',
-      text: 'Olá! Sou a Dra. Sofia, Farmacêutica IA da Pague Menos. 👩‍⚕️💊 Como posso te ajudar hoje? Você pode me descrever sintomas, pedir produtos mais baratos, solicitar genéricos ou enviar sua receita médica!',
+      text: 'Olá! Sou a **Dra. Sofia**, sua Farmacêutica Virtual da Pague Menos. 👩‍⚕️💊\n\nComo posso cuidar de você hoje? Você pode me descrever sintomas (ex: *dor de cabeça*, *azia*), pedir produtos mais econômicos, solicitar genéricos ou anexar sua receita médica!',
       products: [],
       safetyNotice: null
     }
@@ -587,7 +588,10 @@ return (
                   </div>
                 )}
 
-                {msg.text}
+                <FormattedChatMessage
+                  text={msg.text}
+                  isUser={msg.sender === 'user'}
+                />
 
                 {/* Alerta de Medicamento Controlado */}
                 {msg.safetyNotice?.isControlled && (

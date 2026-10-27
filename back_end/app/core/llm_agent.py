@@ -106,7 +106,11 @@ DIRETRIZES DE ATENDIMENTO:
 3. Se houver genéricos na lista, mostre a vantagem de economia com mesma eficácia comprovada pela ANVISA.
 4. Lembre que para medicamentos isentos de prescrição (MIPs), deve-se ler a bula e, se os sintomas persistirem, consultar um médico.
 5. NÃO invente medicamentos que não estejam na lista de fatos.
-6. Retorne estritamente um JSON no seguinte formato:
+6. FORMATAÇÃO E APRESENTAÇÃO VISUAL (MARKDOWN):
+   - Separe parágrafos com quebras de linha duplas (\n\n) para garantir leitura limpa e confortável.
+   - Destaque SEMPRE nomes de produtos, marcas e preços em negrito (ex: **Dipirona 500mg**, **EMS**, **R$ 4,99**).
+   - Quando listar mais de um produto ou recomendação, use marcadores com tópicos (* ou -).
+7. Retorne estritamente um JSON no seguinte formato:
 {{
   "mensagem": "Sua resposta conversacional e detalhada aqui...",
   "produtos_recomendados": ["product_id1", "product_id2"]
@@ -118,7 +122,7 @@ DIRETRIZES DE ATENDIMENTO:
         """Chama a API do Google Gemini via REST com formatação JSON."""
         if not self.gemini_key:
             return None
-        candidate_models = [self.model] if (self.model and self.model != "auto") else ["gemini-3.5-flash", "gemini-3-flash-preview"]
+        candidate_models = [self.model] if (self.model and self.model != "auto") else ["gemini-3-flash-preview", "gemini-3.5-flash"]
         for mod in candidate_models:
             try:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={self.gemini_key}"
@@ -129,7 +133,7 @@ DIRETRIZES DE ATENDIMENTO:
                         "responseMimeType": "application/json"
                     }
                 }
-                resp = requests.post(url, json=payload, timeout=6)
+                resp = requests.post(url, json=payload, timeout=12)
                 if resp.status_code == 200:
                     data = resp.json()
                     text = data["candidates"][0]["content"]["parts"][0]["text"]
