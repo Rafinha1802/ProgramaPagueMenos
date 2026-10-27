@@ -707,3 +707,74 @@ export async function fetchProtectedPrescriptionBlob(imageUrl, token = null) {
     return null;
   }
 }
+
+
+/**
+ * Pesquisa Semântica com IA no backend (RAG vetorial + similaridade clínica de sintomas)
+ */
+export async function searchProductsSemantic({
+  query = '',
+  categoria = null,
+  apenas_disponiveis = true,
+  limite = 50,
+  preferGenerics = false,
+  maxPrice = null
+} = {}) {
+  try {
+    const params = new URLSearchParams();
+    if (query) params.append('q', query);
+    if (categoria && categoria !== 'all') params.append('categoria', categoria);
+    if (apenas_disponiveis !== undefined) params.append('apenas_disponiveis', String(apenas_disponiveis));
+    if (limite) params.append('limite', String(limite));
+    if (preferGenerics) params.append('prefer_generics', 'true');
+    if (maxPrice) params.append('max_price', String(maxPrice));
+
+    const res = await fetch(`${API_BASE_URL}/products/search?${params.toString()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+    return (Array.isArray(list) ? list : []).map(normalizeProduct);
+  } catch (err) {
+    console.warn('[apiService] Falha na busca semântica, usando fallback regular:', err);
+    return await fetchProducts({ categoria, apenas_disponiveis, limite });
+  }
+}
+
+/**
+ * Envia imagem e metadados para Visão Farmacêutica com IA no backend FastAPI (/camera/analyze)
+ */
+export async function analyzeCameraImageBackend({
+  image = null,
+  filename = 'captura.jpg',
+  ocrText = '',
+  intent = 'generic',
+  sessionId = null,
+  userId = null
+} = {}) {
+  try {
+    const activeSessionId = sessionId || getOrCreateSessionId();
+    const res = await fetch(`${API_BASE_URL}/camera/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        image,
+        filename,
+        ocr_text: ocrText,
+        intent,
+        session_id: activeSessionId,
+        user_id: userId || 'user_1'
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.warn('[apiService] Falha ao contatar /camera/analyze do backend:', error);
+    return null;
+  }
+}

@@ -154,8 +154,7 @@ Caso prefira iniciar cada processo separadamente em seus próprios terminais:
 ### Terminal 1 — Backend (Porta 8000)
 ```bash
 # 1. Navegue até o diretório do backend
-cd ../back_PagueMenos/PagueMenosBackend
-# ou se estiver na mesma pasta raiz: cd back_PagueMenos/PagueMenosBackend
+cd back_end
 
 # 2. Crie e ative o ambiente virtual Python (3.11 recomendado)
 python -m venv .venv
@@ -172,7 +171,7 @@ pip install -r requirements.txt
 # Windows: copy .env.example .env | Linux/macOS: cp .env.example .env
 
 # 5. Inicie o servidor Uvicorn
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --reload-dir app --port 8000
 ```
 - Acesse `http://localhost:8000/health` para validar o status (`{"status":"ok"}`).
 - Acesse `http://localhost:8000/docs` para interagir com o Swagger interativo.
@@ -180,7 +179,7 @@ uvicorn app.main:app --reload --port 8000
 ### Terminal 2 — Frontend (Porta 5173)
 ```bash
 # 1. Navegue até a pasta do frontend
-cd PagueMenos
+cd Front_end
 
 # 2. Instale os pacotes npm
 npm install
@@ -713,52 +712,34 @@ A solução de visão computacional e OCR da farmácia opera em duas frentes:
 ## 📁 Estrutura Completa de Pastas
 
 ```text
-PagueMenos/ (Raiz do Projeto)
-├── index.html                       # HTML principal da aplicação React
-├── package.json                     # Dependências do frontend e scripts npm
-├── vite.config.js                   # Configuração do Vite 8 com proxy reverso /api
-├── .env.example                     # Modelo de variáveis de ambiente do front
-├── .oxlintrc.json                   # Configuração do linter oxlint (Rust)
-├── start.bat                        # Inicialização automática Windows (Batch)
-├── start.ps1                        # Inicialização automática Windows (PowerShell)
-├── start.sh                         # Inicialização automática Linux/macOS (Bash)
-├── start_backend.bat / .sh          # Scripts para inicializar apenas o backend
-├── start_frontend.bat / .sh         # Scripts para inicializar apenas o frontend
-├── TUTORIAL_INICIALIZACAO.md        # Guia ilustrado passo a passo de deploy local
-├── README.md                        # Documentação completa técnica e funcional
+ProgramaPagueMenos/ (Raiz do Monorepo)
+├── Front_end/                        # Módulo Frontend da Farmácia (React 19 + Vite 8)
+│   ├── public/                       # Ativos estáticos públicos (produtos, categorias, ícones)
+│   ├── src/                          # Código-fonte React (componentes, telas, serviços, design system)
+│   ├── index.html                    # HTML principal da aplicação React
+│   ├── vite.config.js                # Configuração do Vite com proxy reverso /api -> :8000
+│   ├── package.json                  # Dependências e scripts do Frontend
+│   ├── start_frontend.bat / .sh      # Inicializador local da pasta Front_end
+│   └── README.md                     # Documentação específica do Frontend
 │
-├── public/                          # Ativos estáticos públicos
-│   ├── paguemenos-logo.png          # Logotipo oficial Pague Menos
-│   ├── favicon.svg, icons.svg       # Favicons e vetores gráficos
-│   └── products/                    # Imagens oficiais dos produtos e placeholder neutro
+├── back_end/                         # Módulo Backend da Farmácia (FastAPI + Python 3.11)
+│   ├── app/                          # Rotas (/chat, /products, /cart, /auth, etc.), core e repositórios
+│   ├── data/                         # Catálogo Parquet (500 produtos), uploads e arquivos JSON
+│   ├── tests/                        # 31 testes automatizados (Pytest)
+│   ├── requirements.txt              # Dependências do Python
+│   ├── Dockerfile                    # Dockerfile para produção
+│   ├── start_backend.bat / .sh       # Inicializador local da pasta back_end
+│   └── README.md                     # Documentação específica do Backend
 │
-└── src/                             # Código-fonte do Frontend
-    ├── main.jsx                     # Ponto de entrada React 19
-    ├── App.jsx                      # Orquestrador de rotas, estados globais e drawers
-    ├── index.css, App.css           # Design system e tokens de cores da Pague Menos
-    ├── services/
-    │   ├── api.js                   # Cliente HTTP REST com tratamento de erros e normalização
-    │   ├── authService.js           # Gerenciador de autenticação, login e sessões
-    │   ├── aiCommerceEngine.js      # Motor híbrido de IA (RAG local + remoto)
-    │   └── imageAnalysisService.js  # Análise de imagem e simulação inteligente de OCR
-    ├── data/
-    │   ├── intentPresets.js         # Gatilhos de intenção rápida e jornadas de sintomas
-    │   └── catalog.js               # Catálogo desacoplado para contingência
-    └── components/
-        ├── Header.jsx               # Header desktop com busca preditiva e seletor de CEP
-        ├── Footer.jsx               # Rodapé com dados corporativos, CRF e selos
-        ├── DesktopHomePage.jsx      # Página inicial desktop rica em conteúdo
-        ├── DesktopAiResponsePage.jsx# Resposta dedicada da IA com filtros farmacêuticos
-        ├── DesktopAuthPage.jsx      # Tela cheia de login/cadastro fixa edge-to-edge
-        ├── DesktopCheckoutPage.jsx  # Tela de checkout completa com pagamentos
-        ├── CartDrawer.jsx           # Gaveta slide-over com botão de finalizar compra
-        ├── ChatbotWidget.jsx        # Assistente farmacêutica Sofia 24 horas
-        ├── CameraCaptureModal.jsx   # Scanner de receitas e embalagens via webcam
-        ├── UserProfilePage.jsx      # Área do cliente, cofre de receitas e pedidos
-        ├── TraditionalCatalog.jsx   # Listagem tradicional de produtos com filtros
-        ├── SafetyModal.jsx          # Modal de transparência regulatória ANVISA
-        ├── SiteNavigationModals.jsx # Modais de lojas, app, ajuda e cálculo de CEP
-        └── AiGuidedExperience.jsx   # Interface de compra guiada responsiva
+├── package.json                      # Scripts de conveniência no topo do Monorepo (npm run dev, etc.)
+├── start.bat                         # Inicialização 1-clique Windows (Batch)
+├── start.ps1                         # Inicialização 1-clique Windows (PowerShell)
+├── start.sh                          # Inicialização 1-clique Linux/macOS/WSL (Bash)
+├── start_backend.bat / .sh           # Inicializadores isolados do Backend na raiz
+├── start_frontend.bat / .sh          # Inicializadores isolados do Frontend na raiz
+├── .gitignore                        # Gitignore global unificado do Monorepo
+├── README.md                         # Documentação completa técnica e funcional
+└── TUTORIAL_INICIALIZACAO.md         # Guia ilustrado passo a passo de deploy local
 ```
 
 ---

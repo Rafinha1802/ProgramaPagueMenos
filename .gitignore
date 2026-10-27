@@ -1,3 +1,7 @@
+# =====================================================================
+#  Pague Menos Monorepo - .gitignore
+# =====================================================================
+
 # Logs
 logs
 *.log
@@ -7,18 +11,57 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Node / Frontend Dependencies & Builds
+node_modules/
+*/node_modules/
+dist/
+*/dist/
+dist-ssr/
 *.local
 
-# Editor directories and files
+# Python Bytecode and Caches
+__pycache__/
+*/__pycache__/
+*/**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*/.pytest_cache/
+*/**/.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Python Virtual Environments
+.venv/
+*/.venv/
+*/**/.venv/
+venv/
+env/
+ENV/
+
+# Local Environment Variables & Secrets
+.env
+*/.env
+*/**/.env
+.env.*
+*/.env.*
+!.env.example
+!*/.env.example
+!*/**/.env.example
+
+# Local Ephemeral Uploads and Sensitive Data
+back_end/data/camera_uploads/*
+!back_end/data/camera_uploads/.gitkeep
+
+# IDEs & Operating System Artifacts
+.DS_Store
+Thumbs.db
+.idea/
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.ipynb_checkpoints/

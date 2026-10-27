@@ -14,7 +14,6 @@ const DEFAULT_USERS = [
     phone: '(11) 98765-4321',
     birthDate: '1994-08-15',
     password: 'PagueMenos@2026',
-    token: 'pm_token_user_1_demo',
     createdAt: '2026-01-01T00:00:00.000Z'
   }
 ];
@@ -56,8 +55,7 @@ export function getStoredSession() {
         name: defaultUser.name,
         email: defaultUser.email,
         cpf: defaultUser.cpf,
-        phone: defaultUser.phone,
-        token: defaultUser.token || 'pm_token_user_1_demo'
+        phone: defaultUser.phone
       };
       localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(defaultSession));
       return defaultSession;

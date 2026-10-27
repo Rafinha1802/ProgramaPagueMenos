@@ -1,27 +1,28 @@
 {
-  "name": "paguemenos",
+  "name": "paguemenos-monorepo",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "Monorepo Pague Menos - IA Commerce (Front_end React 19 + back_end FastAPI)",
   "scripts": {
-    "dev": "vite",
-    "backend": "cd ../back_PagueMenos/PagueMenosBackend && python -m uvicorn app.main:app --reload --port 8000",
-    "backend:nested": "cd ../../back_PagueMenos/PagueMenosBackend && python -m uvicorn app.main:app --reload --port 8000",
-    "build": "vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "start": "start.bat",
+    "dev": "npm --prefix Front_end run dev",
+    "front": "npm --prefix Front_end run dev",
+    "build": "npm --prefix Front_end run build",
+    "lint": "npm --prefix Front_end run lint",
+    "preview": "npm --prefix Front_end run preview",
+    "back": "cd back_end && python -m uvicorn app.main:app --reload --reload-dir app --port 8000",
+    "backend": "cd back_end && python -m uvicorn app.main:app --reload --reload-dir app --port 8000",
+    "test:back": "cd back_end && python -m pytest",
+    "test": "npm --prefix Front_end run lint && cd back_end && python -m pytest"
   },
-  "dependencies": {
-    "lucide-react": "^1.54.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "tesseract.js": "^7.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "oxlint": "^1.81.0",
-    "vite": "^8.3.0"
-  }
+  "keywords": [
+    "paguemenos",
+    "ia-commerce",
+    "fastapi",
+    "react",
+    "rag",
+    "anvisa"
+  ],
+  "author": "Pague Menos IA Commerce Team",
+  "license": "UNLICENSED"
 }

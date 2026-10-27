@@ -1,3 +1,4 @@
+import { analyzeCameraImageBackend } from './api.js';
 // Serviço de Visão Computacional e Reconhecimento Óptico de Caracteres (OCR)
 // Extrai informações farmacêuticas reais a partir de fotos tiradas pela câmera
 // Se a imagem não for um medicamento ou receita, retorna identified: false com instruções claras.
@@ -221,8 +222,73 @@ async function performBrowserOCR(imageSource, onProgress = null) {
  * Se a foto não contiver medicamento ou receita médica legível, retorna identified: false.
  */
 export async function analyzeImageWithAI(imageSource, fallbackName = '', onProgress = null) {
-  // 1. Extração de texto real via OCR
-  const rawText = await performBrowserOCR(imageSource, onProgress);
+  // 1. Extração de texto real via OCR em navegador
+  let rawText = '';
+  try {
+    rawText = await performBrowserOCR(imageSource, onProgress);
+  } catch (ocrErr) {
+    console.debug('Aviso no OCR de navegador:', ocrErr);
+  }
+
+  // 2. Análise Farmacêutica Real de Visão Computacional com IA no backend (/camera/analyze)
+  try {
+    const isDataUrl = typeof imageSource === 'string' && imageSource.startsWith('data:image/');
+    const backendResult = await analyzeCameraImageBackend({
+      image: isDataUrl ? imageSource : null,
+      filename: fallbackName || 'captura_camera.jpg',
+      ocrText: rawText || '',
+      intent: 'generic'
+    });
+
+    if (backendResult && typeof backendResult === 'object') {
+      if (!backendResult.identified) {
+        return {
+          success: true,
+          identified: false,
+          rawText: backendResult.raw_text || rawText.trim(),
+          title: backendResult.title || 'Medicamento ou receita não identificado',
+          message: backendResult.message || 'Não conseguimos identificar o medicamento com clareza nesta foto.',
+          reason: backendResult.reason || 'Embalagem fora de foco ou texto ilegível.',
+          suggestions: (backendResult.suggestions && backendResult.suggestions.length > 0) ? backendResult.suggestions : [
+            'Aproxime a câmera da embalagem para focar no nome do remédio ou na dosagem (mg).',
+            'Garanta boa iluminação e evite reflexos ou dedos cobrindo as letras.',
+            'Se for uma receita médica, certifique-se de que o CRM e os itens receitados estejam legíveis.'
+          ]
+        };
+      }
+
+      // Laudo com IA real e produtos equivalentes do catálogo
+      return {
+        success: true,
+        identified: true,
+        rawText: backendResult.raw_text || rawText.trim() || 'Captura analisada com IA Pague Menos.',
+        intent: backendResult.intent || 'generic',
+        detectedMedication: backendResult.detected_medication,
+        brand: backendResult.brand,
+        activePrinciple: backendResult.active_principle,
+        dosage: backendResult.dosage,
+        category: backendResult.category,
+        requiresPrescription: Boolean(backendResult.requires_prescription),
+        anvisaRegistry: backendResult.anvisa_registry,
+        usageAdvice: backendResult.usage_advice,
+        equivalentGeneric: backendResult.equivalent_generic,
+        genericPrice: backendResult.generic_price,
+        referencePrice: backendResult.reference_price,
+        savingsPct: backendResult.savings_pct,
+        badgeText: backendResult.badge_text || (backendResult.requires_prescription ? 'Receita Médica Oficial' : 'Genérico Equivalente Aprovado'),
+        actionText: backendResult.action_text || `Identificamos ${backendResult.detected_medication || 'o medicamento'}.`,
+        prescriptionData: backendResult.prescription_data || null,
+        matchedProducts: backendResult.matched_products || []
+      };
+    }
+  } catch (apiErr) {
+    console.warn('[imageAnalysisService] Falha na análise com backend, aplicando contingência local:', apiErr);
+  }
+
+  // 3. Fallback: OCR local e regras heurísticas
+  if (!rawText) {
+    rawText = await performBrowserOCR(imageSource, onProgress);
+  }
   const combinedText = `${rawText} ${fallbackName}`.toLowerCase();
 
   // 2. Detecção estrita de Receita Médica Oficial

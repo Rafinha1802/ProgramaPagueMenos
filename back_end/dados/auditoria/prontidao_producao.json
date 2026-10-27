@@ -1,0 +1,238 @@
+{
+  "gerado_em": "2026-10-24T23:19:22.315368Z",
+  "backend_embedding": "sentence-transformers/all-MiniLM-L6-v2",
+  "n_produtos": 500,
+  "limitacoes": {
+    "1_guardrail_lexico": {
+      "total_parafrases": 25,
+      "bloqueados": 4,
+      "taxa_bloqueio_pct": 16.0,
+      "taxa_escape_pct": 84.0,
+      "acerto_categoria_pct": 16.0,
+      "casos_de_escape": [
+        "estou com dor de cabeça o que pode ser",
+        "minha cabeça dói o que será que é",
+        "será que é enxaqueca",
+        "meu filho tem febre o que dou",
+        "aquele remédio que começa com amo serve pra garganta",
+        "posso dar meio comprimido pro meu filho",
+        "de quanto em quanto tempo posso tomar",
+        "qual a dose segura pra criança de 3 anos",
+        "tomo quantas vezes ao dia",
+        "preciso de um remédio pra infecção",
+        "qual antibiótico é bom pra garganta",
+        "pode me indicar algo pra dor forte",
+        "o médico receitou amoxicilina, tem outro igual",
+        "posso tomar ibuprofeno grávida",
+        "estou gestante, esse remédio faz mal",
+        "grávida de 6 meses, o que posso tomar pra dor",
+        "na gravidez, dipirona é seguro",
+        "o genérico é igual ao de marca",
+        "tem outro remédio com o mesmo efeito",
+        "posso substituir sem falar com o médico",
+        "esse serve no lugar daquele que eu tomo"
+      ]
+    },
+    "2_falso_positivo_receita": {
+      "produtos_confirmados_receita": 43,
+      "produtos_suspeita_para_revisao": 331,
+      "provaveis_falsos_positivos": 280,
+      "amostra_suspeitos": [
+        {
+          "product_name": "Solução Fisiológica Dauf Pro Soro 0,9% 500ml",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Tadalafila 5mg 30 Comprimidos Revestidos Genérico Cimed",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Nimesulida 100mg 12 Comprimidos Genérico Cimed",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Glifage XR 500mg 30 Comprimidos",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Fluconazol 150mg 2 Cápsulas Duras Genérico EMS",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Dipirona Monoidratada 500mg 10 Comprimidos Genérico EMS",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Nimesulida 100mg 12 Comprimidos Genérico Nova Quimica",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Mounjaro 2.5mg Tirzepatida 4 Doses Injetáveis",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Mounjaro 5mg Tirzepatida 4 Doses Injetáveis",
+          "sinais_fracos": "categoria_medicamentos"
+        },
+        {
+          "product_name": "Hemifumarato de Quetiapina 25mg 30 Comprimidos Revestidos Genérico Geolab",
+          "sinais_fracos": "categoria_medicamentos"
+        }
+      ]
+    },
+    "3_tfidf_vs_st": {
+      "total_queries_sinonimo": 10,
+      "tfidf_acertos_top3": 3,
+      "tfidf_taxa_pct": 30.0,
+      "sentence_transformers": {
+        "acertos": 3,
+        "taxa_pct": 30.0,
+        "detalhes": [
+          {
+            "query": "dor de cabeça",
+            "sinonimo": "analgésico",
+            "alvo": "dipirona",
+            "acertou_top3": false,
+            "top3": [
+              "Compressa de Gaze Cremer 5 Unidades",
+              "Chip Pague Menos + Recarga 30 Reais",
+              "Kit Lenço Umedecido João E Maria Com Fragrância 180 Unidades"
+            ]
+          },
+          {
+            "query": "dor de cabeça",
+            "sinonimo": "analgésico",
+            "alvo": "paracetamol",
+            "acertou_top3": false,
+            "top3": [
+              "Compressa de Gaze Cremer 5 Unidades",
+              "Chip Pague Menos + Recarga 30 Reais",
+              "Kit Lenço Umedecido João E Maria Com Fragrância 180 Unidades"
+            ]
+          },
+          {
+            "query": "mal estar",
+            "sinonimo": "antitérmico",
+            "alvo": "dipirona",
+            "acertou_top3": false,
+            "top3": [
+              "Chip Pague Menos + Recarga 30 Reais",
+              "Seringa Descartável Bd Solomed 3ml Com Agulha 0,70x25",
+              "Seringa Pague Menos Com Agulha 30x0,7mm 3ml"
+            ]
+          },
+          {
+            "query": "gripe",
+            "sinonimo": "antitérmico",
+            "alvo": "paracetamol",
+            "acertou_top3": false,
+            "top3": [
+              "Vick VapoRub Pomada para Gripe e Congestão Nasal 30g",
+              "Antigripal Cimegripe 20 Cápsulas",
+              "Vick VapoRub Pomada para Gripe e Congestão Nasal 12g"
+            ]
+          },
+          {
+            "query": "alergia",
+            "sinonimo": "antialérgico",
+            "alvo": "loratadina",
+            "acertou_top3": true,
+            "top3": [
+              "Lenços Umedecidos Huggies Rosto e Corpo Limpeza 4 x 48 Un",
+              "Loratadina 1mg/ml Xarope 100ml Genérico Cimed",
+              "Anti Alergico Loratamed 10Mg 12 Comprimidos"
+            ]
+          },
+          {
+            "query": "coceira",
+            "sinonimo": "antialérgico",
+            "alvo": "loratadina",
+            "acertou_top3": false,
+            "top3": [
+              "Aciclovir 50mg/g Creme 10g Genérico Cimed",
+              "Compressa Gaze Dauf 13 Fios 20 Unidades",
+              "Aciclovir 200mg 30 Comprimidos Genérico Cimed"
+            ]
+          },
+          {
+            "query": "pressão alta",
+            "sinonimo": "anti-hipertensivo",
+            "alvo": "losartana",
+            "acertou_top3": true,
+            "top3": [
+              "Fralda Pants Huggies Proteção Acolchoada XG 80 Unidades",
+              "Losartana Potássica 50mg 30 Comprimidos Revestidos Genérico EMS",
+              "Compressa de Gaze Cremer 5 Unidades"
+            ]
+          },
+          {
+            "query": "açúcar no sangue",
+            "sinonimo": "antidiabético",
+            "alvo": "metformina",
+            "acertou_top3": false,
+            "top3": [
+              "Besilato de Anlodipino 10mg 30 Comprimidos Genérico Cimed",
+              "Chip Pague Menos + Recarga 30 Reais",
+              "Escova Dental Colgate Zig Zag com Carvão Ativado Cerdas Médias Cores Sortidas 4 Unidades"
+            ]
+          },
+          {
+            "query": "antibiótico",
+            "sinonimo": "antibacteriano",
+            "alvo": "amoxicilina",
+            "acertou_top3": true,
+            "top3": [
+              "Amoxicilina 875mg + Clavulanato de Potássio 125mg 14 Comprimidos Revestidos Genérico Ranbaxy",
+              "Antisséptico Bucal Colgate Total 12 Prevenção Ativa Sem Álcool Sabor Extra Mint Spray 60ml",
+              "Amoxicilina 500mg 21 Cápsulas Duras Genérico Prati-Donaduzzi"
+            ]
+          },
+          {
+            "query": "queimadura de sol",
+            "sinonimo": "fotoprotetor",
+            "alvo": "protetor solar",
+            "acertou_top3": false,
+            "top3": [
+              "Fralda Pants Huggies Proteção Acolchoada XXG 72 Unidades",
+              "Fralda Pants Huggies Proteção Acolchoada XG 80 Unidades",
+              "Kit Lenço Umedecido João E Maria Recém-Nascido Sem Fragrância Com Glicerina E Aloe Vera 4 Un Com 45 Folhas Cada Leve 4 Pague 3 Unidades"
+            ]
+          }
+        ]
+      },
+      "gap_pct": 0.0
+    },
+    "4_revalidacao": {
+      "amostra": 200,
+      "esgotaram_simulado": 22,
+      "mudaram_preco_simulado": 15,
+      "afetados_pct": 17.5,
+      "conclusao": "Sem revalidação em tempo real, 17.5% das recomendações apresentariam preço ou estoque desatualizados."
+    }
+  },
+  "metricas_globais": {
+    "taxa_escape_guardrail_lexico_pct": 84.0,
+    "taxa_acerto_tfidf_sinonimo_pct": 30.0,
+    "taxa_acerto_st_sinonimo_pct": 30.0,
+    "taxa_revalidacao_afetados_pct": 17.5,
+    "produtos_confirmados_receita": 43,
+    "produtos_disponiveis_pct": 100.0
+  },
+  "recomendacoes": [
+    {
+      "prioridade": "🔴 Alta",
+      "item": "Classificador semântico de intenção",
+      "justificativa": "guardrail léxico escapa em 84% dos casos"
+    },
+    {
+      "prioridade": "🔴 Alta",
+      "item": "Revalidação de preço/estoque em tempo real",
+      "justificativa": "18% das recomendações ficam desatualizadas"
+    },
+    {
+      "prioridade": "🟢 Baixa",
+      "item": "Revisão humana de 280 prováveis falsos positivos",
+      "justificativa": "falso positivo não infringe Anvisa, mas gera atrito"
+    }
+  ]
+}

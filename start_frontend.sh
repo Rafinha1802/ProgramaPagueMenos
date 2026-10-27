@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 # =====================================================================
-#  Pague Menos - Inicialização isolada do Frontend (Linux / macOS)
+#  Pague Menos - Inicializador Isolado do Frontend (Linux / macOS / WSL)
 # =====================================================================
 
 set -e
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+FRONT_DIR="$SCRIPT_DIR/Front_end"
+
+if [ ! -f "$FRONT_DIR/package.json" ]; then
+    echo "Erro: pasta Front_end não encontrada em $FRONT_DIR."
+    exit 1
+fi
+
+cd "$FRONT_DIR"
 
 if [ ! -d "node_modules" ]; then
-    echo "Instalando dependências do frontend (npm install)..."
+    echo "[CONFIG] Instalando dependências do frontend..."
     npm install
 fi
 

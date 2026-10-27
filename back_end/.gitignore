@@ -1,0 +1,34 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local ephemeral data and uploads (protect sensitive user and prescription data)
+data/*.json
+data/camera_uploads/
+
+# Build and test artifacts
+build/
+dist/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Notebook and local OS files
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
